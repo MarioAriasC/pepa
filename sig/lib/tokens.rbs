@@ -1,0 +1,85 @@
+module Tokens
+  class TokenType
+    attr_reader value: String
+
+    def initialize: (String value) -> void
+
+    def eql?: (TokenType other) -> bool
+  end
+
+  ILLEGAL: TokenType
+
+  EOF: TokenType
+
+  ASSIGN: TokenType
+
+  EQ: TokenType
+
+  NOT_EQ: TokenType
+
+  IDENT: TokenType
+
+  INT: TokenType
+
+  PLUS: TokenType
+
+  COMMA: TokenType
+
+  SEMICOLON: TokenType
+
+  COLON: TokenType
+
+  MINUS: TokenType
+
+  BANG: TokenType
+
+  SLASH: TokenType
+
+  ASTERISK: TokenType
+
+  LT: TokenType
+
+  GT: TokenType
+
+  LPAREN: TokenType
+
+  RPAREN: TokenType
+
+  LBRACE: TokenType
+
+  RBRACE: TokenType
+
+  LBRACKET: TokenType
+
+  RBRACKET: TokenType
+
+  FUNCTION: TokenType
+
+  LET: TokenType
+
+  TRUE: TokenType
+
+  FALSE: TokenType
+
+  IF: TokenType
+
+  ELSE: TokenType
+
+  RETURN: TokenType
+
+  STRING: TokenType
+
+  KEYBOARDS: untyped
+
+  class Token
+    attr_reader literal: String
+
+    attr_reader type: TokenType
+
+    def initialize: (TokenType `type`, String literal) -> void
+  end
+end
+
+class String
+  def lookup_ident: () -> Tokens::TokenType
+end

@@ -1,0 +1,22 @@
+module Lexers
+  WHITE_SPACES: untyped
+
+  ZERO: ::String
+
+  class Lexer
+    def initialize: (String input) -> void
+
+    def next_token: () -> Tokens::Token
+
+    private
+
+    def ends_with_equal: (Tokens::TokenType one_char, Tokens::TokenType two_chars, ?duplicate_chars: bool duplicate_chars) -> Tokens::Token
+
+    def skip_whitespace: () -> void
+
+    def read_char: () -> untyped
+
+    def peak_char: () -> untyped
+
+  end
+end
