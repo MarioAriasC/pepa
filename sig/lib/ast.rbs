@@ -1,0 +1,30 @@
+module Ast
+  class Node
+    def token_literal: () -> nil
+  end
+
+  class Statement < Node
+  end
+
+  class Expression < Node
+    def eql?: (untyped other) -> untyped
+  end
+
+  module TokenHolder
+    attr_reader token: untyped
+
+    def token_literal: () -> untyped
+  end
+
+  module LiteralExpression
+    def to_s: () -> untyped
+  end
+
+  class Program < Node
+    attr_reader statements: untyped
+
+    def initialize: (untyped statements) -> void
+
+    def token_literal: () -> untyped
+  end
+end

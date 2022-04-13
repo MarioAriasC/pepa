@@ -1,0 +1,19 @@
+module Parsers
+  class Parser
+    attr_reader errors: untyped
+
+    def initialize: (untyped lexer) -> void
+
+    def parse_program: () -> untyped
+
+    private
+
+    def next_token: () -> untyped
+
+    def parse_let_statement: () -> (nil | untyped)
+
+    def parse_statement: () -> untyped
+
+    def expect_peek?: (untyped token_type) -> untyped
+  end
+end
