@@ -126,6 +126,21 @@ module Ast
       "#{token_literal} #{@return_value.or_else("")}"
     end
   end
+
+  class PrefixExpression < Expression
+    include TokenHolder
+    attr_reader :operator, :right
+
+    def initialize(token, operator, right)
+      @token = token
+      @operator = operator
+      @right = right
+    end
+
+    def to_s
+      "(#{@operator}#{@right})"
+    end
+  end
 end
 
 class Object

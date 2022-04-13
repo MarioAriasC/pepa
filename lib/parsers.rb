@@ -41,7 +41,9 @@ module Parsers
         Tokens::INT => method(:parse_integer_literal),
         Tokens::TRUE => method(:parse_boolean_literal),
         Tokens::FALSE => method(:parse_boolean_literal),
-        Tokens::IDENT => method(:parse_identifier)
+        Tokens::IDENT => method(:parse_identifier),
+        Tokens::BANG => method(:parse_prefix_expression),
+        Tokens::MINUS => method(:parse_prefix_expression)
       }.freeze
       next_token
       next_token
@@ -134,6 +136,14 @@ module Parsers
       Ast::Identifier.new(@cur_token, @cur_token.literal)
     end
 
+    def parse_prefix_expression
+      token = @cur_token
+      operator = token.literal
+      next_token
+      right = parse_expression(Precedence::PREFIX)
+      Ast::PrefixExpression.new(token, operator, right)
+    end
+
     def expect_peek?(token_type)
       if peek_token_is?(token_type)
         next_token
@@ -154,6 +164,14 @@ module Parsers
 
     def cur_token_is(token_type)
       @cur_token.type == token_type
+    end
+
+    def peek_precedence
+      find_precedence(@peek_token.type)
+    end
+
+    def find_precedence(token_type)
+      PRECEDENCES[token_type].or_else(Precedence::LOWEST)
     end
   end
 end

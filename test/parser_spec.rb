@@ -44,5 +44,43 @@ describe "Parsers::Parser" do
         test_literal_expression(return_statement.return_value, expected_value)
       end
     end
+
+    it "identifier expression" do
+      input = "foobar"
+      program = create_program(input)
+      count_statements(1, program)
+      identifier = program.statements[0].expression
+      assert_equal identifier.value, "foobar"
+      assert_equal identifier.token_literal, "foobar"
+    end
+
+    it "integer literal" do
+      input = "5;"
+      program = create_program(input)
+      count_statements(1, program)
+      literal = program.statements[0].expression
+      case literal
+      when Ast::IntegerLiteral
+        assert_equal literal.value, 5
+        assert_equal literal.token_literal, "5"
+      else
+        raise "expression_statement.expression? not an Integer Literal"
+      end
+    end
+
+    it "parsing prefix expressions" do
+      [
+        ["!5;", "!", 5],
+        ["-15;", "-", 15],
+        ["!true", "!", true],
+        ["!false", "!", false]
+      ].each do |input, operator, value|
+        program = create_program(input)
+        count_statements(1, program)
+        prefix_expression = program.statements[0].expression
+        assert_equal prefix_expression.operator, operator
+        test_literal_expression(prefix_expression.right, value)
+      end
+    end
   end
 end
