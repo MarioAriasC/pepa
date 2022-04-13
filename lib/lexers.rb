@@ -7,10 +7,9 @@ module Lexers
   ZERO = ""
 
   class Lexer
-
     def initialize(input)
       @position = 0
-      @read_position = 1
+      @read_position = 0
       @ch = ZERO
       @input = input
       read_char
@@ -87,7 +86,7 @@ module Lexers
 
     def read_value(&block)
       current_position = @position
-      read_char while yield(@ch)
+      read_char while block.call @ch
       @input[current_position..(@position - 1)]
     end
 

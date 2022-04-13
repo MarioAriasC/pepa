@@ -4,16 +4,18 @@ module Parsers
 
     def initialize: (untyped lexer) -> void
 
-    def parse_program: () -> untyped
+    def parse_program: () -> Ast::Program
 
     private
 
-    def next_token: () -> untyped
+    def next_token: () -> Tokens::Token
 
-    def parse_let_statement: () -> (nil | untyped)
+    def parse_let_statement: () -> (nil | Ast::LetStatement)
 
-    def parse_statement: () -> untyped
+    def parse_statement: () -> (nil | Ast::Statement)
 
-    def expect_peek?: (untyped token_type) -> untyped
+    def expect_peek?: (Tokens::TokenType token_type) -> bool
+
+    def peek_token_is?: (Tokens::TokenType token_type) -> bool
   end
 end

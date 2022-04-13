@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 module Tokens
-
   # TokenType
   class TokenType
     attr_reader :value
@@ -12,6 +11,10 @@ module Tokens
 
     def eql?(other)
       @value == other.value
+    end
+
+    def to_s
+      @value
     end
   end
 
