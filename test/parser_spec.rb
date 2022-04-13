@@ -1,7 +1,9 @@
-require 'minitest/autorun'
-require 'spec_helper'
+# frozen_string_literal: true
 
-describe 'Parsers::Parser' do
+require "minitest/autorun"
+require "spec_helper"
+
+describe "Parsers::Parser" do
   before do
     # Do nothing
   end
@@ -15,7 +17,7 @@ describe 'Parsers::Parser' do
       [
         ["let x = 5;", "x", 5],
         ["let y = true;", "y", true],
-        ["let foobar = y;", "foobar", "y"],
+        ["let foobar = y;", "foobar", "y"]
       ].each do |input, expected_identifier, expected_value|
         program = create_program(input)
         count_statements(1, program)

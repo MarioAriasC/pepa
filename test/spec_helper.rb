@@ -1,11 +1,11 @@
-require 'lexers'
-require 'parsers'
+# frozen_string_literal: true
+
+require "lexers"
+require "parsers"
 
 def check_parser_errors(parser)
   errors = parser.errors
-  unless errors.empty?
-    raise "parser has #{errors.size} errors \n#{errors.join("\n")}"
-  end
+  raise "parser has #{errors.size} errors \n#{errors.join("\n")}" unless errors.empty?
 end
 
 def create_program(input)
@@ -46,5 +46,4 @@ def test_literal_expression(value, expected_value)
   else
     raise "type of value not handled. got=#{expected_value}"
   end
-
 end

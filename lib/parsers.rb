@@ -1,5 +1,7 @@
-require 'tokens'
-require 'ast'
+# frozen_string_literal: true
+
+require "tokens"
+require "ast"
 
 module Parsers
   module Precedence
@@ -23,8 +25,8 @@ module Parsers
     Tokens::SLASH => Precedence::PRODUCT,
     Tokens::ASTERISK => Precedence::PRODUCT,
     Tokens::LPAREN => Precedence::CALL,
-    Tokens::LBRACKET => Precedence::INDEX,
-  }
+    Tokens::LBRACKET => Precedence::INDEX
+  }.freeze
 
   class Parser
     attr_reader :errors
@@ -39,8 +41,8 @@ module Parsers
         Tokens::INT => method(:parse_integer_literal),
         Tokens::TRUE => method(:parse_boolean_literal),
         Tokens::FALSE => method(:parse_boolean_literal),
-        Tokens::IDENT => method(:parse_identifier),
-      }
+        Tokens::IDENT => method(:parse_identifier)
+      }.freeze
       next_token
       next_token
     end
@@ -49,9 +51,7 @@ module Parsers
       statements = []
       while @cur_token.type != Tokens::EOF
         statement = parse_statement
-        if statement
-          statements << statement
-        end
+        statements << statement if statement
         next_token
       end
       Ast::Program.new(statements)
@@ -66,18 +66,14 @@ module Parsers
 
     def parse_let_statement
       token = @cur_token
-      unless expect_peek?(Tokens::IDENT)
-        return nil
-      end
+      return nil unless expect_peek?(Tokens::IDENT)
+
       name = Ast::Identifier.new(@cur_token, @cur_token.literal)
-      unless expect_peek?(Tokens::ASSIGN)
-        return nil
-      end
+      return nil unless expect_peek?(Tokens::ASSIGN)
+
       next_token
       value = parse_expression(Precedence::LOWEST)
-      if peek_token_is?(Tokens::SEMICOLON)
-        next_token
-      end
+      next_token if peek_token_is?(Tokens::SEMICOLON)
       Ast::LetStatement.new(token, name, value)
     end
 
@@ -94,16 +90,15 @@ module Parsers
 
     def parse_expression(precedence)
       prefix = @prefix_parsers[@cur_token.type]
-      if prefix == nil
+      if prefix.nil?
         no_prefix_parse_error(@cur_token.type)
         return nil
       end
       left = prefix.call
       while !peek_token_is?(Tokens::SEMICOLON) && precedence < peek_precedence
         infix = @infix_parsers[@peek_token.type]
-        if infix == nil
-          return left
-        end
+        return left if infix.nil?
+
         next_token
         left = infix.call(left)
       end
@@ -113,9 +108,7 @@ module Parsers
     def parse_expression_statement
       token = @cur_token
       expression = parse_expression(Precedence::LOWEST)
-      if peek_token_is?(Tokens::SEMICOLON)
-        next_token
-      end
+      next_token if peek_token_is?(Tokens::SEMICOLON)
       Ast::ExpressionStatement.new(token, expression)
     end
 

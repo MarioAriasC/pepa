@@ -10,7 +10,7 @@ module Ast
 
   class Expression < Node
     def eql?(other)
-      self.to_s == other.to_s
+      to_s == other.to_s
     end
   end
 
@@ -44,7 +44,7 @@ module Ast
     end
 
     def to_s
-      @statements.join("")
+      @statements.join
     end
   end
 
@@ -73,7 +73,7 @@ module Ast
     end
 
     def to_s
-      # TODO add or_else
+      # TODO: add or_else
       "#{token_literal} #{@name} = #{@value}"
     end
   end
