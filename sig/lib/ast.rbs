@@ -31,4 +31,8 @@ module Ast
   class LetStatement < Statement
     include TokenHolder
   end
+
+  class ReturnStatement < Statement
+
+  end
 end

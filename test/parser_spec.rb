@@ -29,5 +29,20 @@ describe "Parsers::Parser" do
         test_literal_expression(value, expected_value)
       end
     end
+
+    it "return statement" do
+      [
+        ["return 5;", 5],
+        ["return true;", true],
+        ["return foobar;", "foobar"]
+      ].each do |input, expected_value|
+        program = create_program(input)
+        count_statements(1, program)
+
+        return_statement = program.statements[0]
+        assert_equal return_statement.token_literal, "return"
+        test_literal_expression(return_statement.return_value, expected_value)
+      end
+    end
   end
 end

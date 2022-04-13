@@ -112,6 +112,14 @@ module Parsers
       Ast::ExpressionStatement.new(token, expression)
     end
 
+    def parse_return_statement
+      token = @cur_token
+      next_token
+      return_value = parse_expression(Precedence::LOWEST)
+      next_token while peek_token_is?(Tokens::SEMICOLON)
+      Ast::ReturnStatement.new(token, return_value)
+    end
+
     def parse_integer_literal
       token = @cur_token
       value = token.literal.to_i

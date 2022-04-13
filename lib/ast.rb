@@ -73,8 +73,7 @@ module Ast
     end
 
     def to_s
-      # TODO: add or_else
-      "#{token_literal} #{@name} = #{@value}"
+      "#{token_literal} #{@name} = #{@value.or_else("")}"
     end
   end
 
@@ -88,7 +87,7 @@ module Ast
     end
 
     def to_s
-      @expression.to_s
+      @expression.or_else("").to_s
     end
   end
 
@@ -111,6 +110,30 @@ module Ast
     def initialize(token, value)
       @token = token
       @value = value
+    end
+  end
+
+  class ReturnStatement < Statement
+    include TokenHolder
+    attr_reader :return_value
+
+    def initialize(token, return_value)
+      @token = token
+      @return_value = return_value
+    end
+
+    def to_s
+      "#{token_literal} #{@return_value.or_else("")}"
+    end
+  end
+end
+
+class Object
+  def or_else(alternative)
+    if nil?
+      alternative
+    else
+      self
     end
   end
 end
