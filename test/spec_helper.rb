@@ -47,3 +47,9 @@ def test_literal_expression(value, expected_value)
     raise "type of value not handled. got=#{expected_value}"
   end
 end
+
+def test_infix_expression(expression, left_value, operator, right_value)
+  test_literal_expression(expression.left, left_value)
+  assert_equal expression.operator, operator
+  test_literal_expression(expression.right, right_value)
+end

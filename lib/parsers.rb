@@ -45,6 +45,17 @@ module Parsers
         Tokens::BANG => method(:parse_prefix_expression),
         Tokens::MINUS => method(:parse_prefix_expression)
       }.freeze
+
+      @infix_parsers = {
+        Tokens::PLUS => method(:parse_infix_expression),
+        Tokens::MINUS => method(:parse_infix_expression),
+        Tokens::SLASH => method(:parse_infix_expression),
+        Tokens::ASTERISK => method(:parse_infix_expression),
+        Tokens::EQ => method(:parse_infix_expression),
+        Tokens::NOT_EQ => method(:parse_infix_expression),
+        Tokens::LT => method(:parse_infix_expression),
+        Tokens::GT => method(:parse_infix_expression)
+      }.freeze
       next_token
       next_token
     end
@@ -144,6 +155,15 @@ module Parsers
       Ast::PrefixExpression.new(token, operator, right)
     end
 
+    def parse_infix_expression(left)
+      token = @cur_token
+      operator = token.literal
+      precedence = cur_precedence
+      next_token
+      right = parse_expression(precedence)
+      Ast::InfixExpression.new(token, left, operator, right)
+    end
+
     def expect_peek?(token_type)
       if peek_token_is?(token_type)
         next_token
@@ -172,6 +192,10 @@ module Parsers
 
     def find_precedence(token_type)
       PRECEDENCES[token_type].or_else(Precedence::LOWEST)
+    end
+
+    def cur_precedence
+      find_precedence(@cur_token.type)
     end
   end
 end

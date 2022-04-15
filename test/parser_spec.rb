@@ -82,5 +82,26 @@ describe "Parsers::Parser" do
         test_literal_expression(prefix_expression.right, value)
       end
     end
+
+    it "parsing infix expressions" do
+      [
+        ["5 + 5;", 5, "+", 5],
+        ["5 - 5;", 5, "-", 5],
+        ["5 * 5;", 5, "*", 5],
+        ["5 / 5;", 5, "/", 5],
+        ["5 > 5;", 5, ">", 5],
+        ["5 < 5;", 5, "<", 5],
+        ["5 == 5;", 5, "==", 5],
+        ["5 != 5;", 5, "!=", 5],
+        ["true == true", true, "==", true],
+        ["true != false", true, "!=", false],
+        ["false == false", false, "==", false]
+      ].each do |input, left_value, operator, right_value|
+        program = create_program(input)
+        count_statements(1, program)
+        expression_statement = program.statements[0]
+        test_infix_expression(expression_statement.expression, left_value, operator, right_value)
+      end
+    end
   end
 end
