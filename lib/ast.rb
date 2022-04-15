@@ -157,6 +157,48 @@ module Ast
       "(#{@left} #{operator} #{@right})"
     end
   end
+
+  class CallExpression < Expression
+    include TokenHolder
+
+    def initialize(token, function, arguments)
+      @token = token
+      @function = function
+      @arguments = arguments
+    end
+
+    def to_s
+      "#{@function}(#{@arguments.or_else([]).join(", ")})"
+    end
+  end
+
+  class ArrayLiteral < Expression
+    include TokenHolder
+
+    def initialize(token, elements)
+      @token = token
+      @elements = elements
+    end
+
+    def to_s
+      "[#{@elements.or_else([]).join(", ")}]"
+    end
+  end
+
+  class IndexExpression < Expression
+    include TokenHolder
+    attr_reader :left, :index
+
+    def initialize(token, left, index)
+      @token = token
+      @left = left
+      @index = index
+    end
+
+    def to_s
+      "(#{@left}[#{@index}])"
+    end
+  end
 end
 
 class Object

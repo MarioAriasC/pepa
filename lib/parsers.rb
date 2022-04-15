@@ -43,7 +43,10 @@ module Parsers
         Tokens::FALSE => method(:parse_boolean_literal),
         Tokens::IDENT => method(:parse_identifier),
         Tokens::BANG => method(:parse_prefix_expression),
-        Tokens::MINUS => method(:parse_prefix_expression)
+        Tokens::MINUS => method(:parse_prefix_expression),
+        Tokens::LPAREN => method(:parse_group_expression),
+        Tokens::LBRACKET => method(:parse_array_literal)
+        # Tokens::FUNCTION => method(:parse_function_literal)
       }.freeze
 
       @infix_parsers = {
@@ -54,7 +57,9 @@ module Parsers
         Tokens::EQ => method(:parse_infix_expression),
         Tokens::NOT_EQ => method(:parse_infix_expression),
         Tokens::LT => method(:parse_infix_expression),
-        Tokens::GT => method(:parse_infix_expression)
+        Tokens::GT => method(:parse_infix_expression),
+        Tokens::LPAREN => method(:parse_call_expression),
+        Tokens::LBRACKET => method(:parse_index_expression)
       }.freeze
       next_token
       next_token
@@ -162,6 +167,55 @@ module Parsers
       next_token
       right = parse_expression(precedence)
       Ast::InfixExpression.new(token, left, operator, right)
+    end
+
+    def parse_group_expression
+      next_token
+      exp = parse_expression(Precedence::LOWEST)
+      return nil unless expect_peek?(Tokens::RPAREN)
+
+      exp
+    end
+
+    def parse_call_expression(expression)
+      token = @cur_token
+      arguments = parse_expression_list(Tokens::RPAREN)
+      Ast::CallExpression.new(token, expression, arguments)
+    end
+
+    def parse_expression_list(end_type)
+      arguments = []
+      if peek_token_is? end_type
+        next_token
+        return arguments
+      end
+
+      next_token
+      arguments << parse_expression(Precedence::LOWEST)
+      while peek_token_is? Tokens::COMMA
+        next_token
+        next_token
+
+        arguments << parse_expression(Precedence::LOWEST)
+      end
+      return nil unless expect_peek?(end_type)
+
+      arguments
+    end
+
+    def parse_array_literal
+      token = @cur_token
+      Ast::ArrayLiteral.new(token, parse_expression_list(Tokens::RBRACKET))
+    end
+
+    def parse_index_expression(left)
+      token = @cur_token
+      next_token
+
+      index = parse_expression(Precedence::LOWEST)
+      return nil unless expect_peek?(Tokens::RBRACKET)
+
+      Ast::IndexExpression.new(token, left, index)
     end
 
     def expect_peek?(token_type)

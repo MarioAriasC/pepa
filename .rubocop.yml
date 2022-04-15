@@ -15,3 +15,6 @@ Style/Documentation:
 
 Layout/LineLength:
   Max: 120
+
+Lint/MissingSuper:
+  Enabled: false

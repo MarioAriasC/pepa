@@ -103,5 +103,112 @@ describe "Parsers::Parser" do
         test_infix_expression(expression_statement.expression, left_value, operator, right_value)
       end
     end
+
+    it "operator precedence" do
+      [
+        [
+          "-a * b",
+          "((-a) * b)"
+        ],
+        %w[!-a (!(-a))],
+        [
+          "a + b + c",
+          "((a + b) + c)"
+        ],
+        [
+          "a + b - c",
+          "((a + b) - c)"
+        ],
+        [
+          "a * b * c",
+          "((a * b) * c)"
+        ],
+        [
+          "a * b / c",
+          "((a * b) / c)"
+        ],
+        [
+          "a + b / c",
+          "(a + (b / c))"
+        ],
+        [
+          "a + b * c + d / e - f",
+          "(((a + (b * c)) + (d / e)) - f)"
+        ],
+        [
+          "3 + 4; -5 * 5",
+          "(3 + 4)((-5) * 5)"
+        ],
+        [
+          "5 > 4 == 3 < 4",
+          "((5 > 4) == (3 < 4))"
+        ],
+        [
+          "5 < 4 != 3 > 4",
+          "((5 < 4) != (3 > 4))"
+        ],
+        [
+          "3 + 4 * 5 == 3 * 1 + 4 * 5",
+          "((3 + (4 * 5)) == ((3 * 1) + (4 * 5)))"
+        ],
+        %w[true true],
+        %w[false false],
+        [
+          "3 > 5 == false",
+          "((3 > 5) == false)"
+        ],
+        [
+          "3 < 5 == true",
+          "((3 < 5) == true)"
+        ],
+        [
+          "1 + (2 + 3) + 4",
+          "((1 + (2 + 3)) + 4)"
+        ],
+        [
+          "(5 + 5) * 2",
+          "((5 + 5) * 2)"
+        ],
+        [
+          "2 / (5 + 5)",
+          "(2 / (5 + 5))"
+        ],
+        [
+          "(5 + 5) * 2 * (5 + 5)",
+          "(((5 + 5) * 2) * (5 + 5))"
+        ],
+        [
+          "-(5 + 5)",
+          "(-(5 + 5))"
+        ],
+        [
+          "!(true == true)",
+          "(!(true == true))"
+        ],
+        [
+          "a + add(b * c) + d",
+          "((a + add((b * c))) + d)"
+        ],
+        [
+          "add(a, b, 1, 2 * 3, 4 + 5, add(6, 7 * 8))",
+          "add(a, b, 1, (2 * 3), (4 + 5), add(6, (7 * 8)))"
+        ],
+        [
+          "add(a + b + c * d / f + g)",
+          "add((((a + b) + ((c * d) / f)) + g))"
+        ],
+        [
+          "a * [1, 2, 3, 4][b * c] * d",
+          "((a * ([1, 2, 3, 4][(b * c)])) * d)"
+        ],
+        [
+          "add(a * b[2], b[1], 2 * [1, 2][1])",
+          "add((a * (b[2])), (b[1]), (2 * ([1, 2][1])))"
+        ]
+      ].each do |input, expected|
+        program = create_program(input)
+        assert_equal expected, program.to_s
+      end
+    end
   end
 end
