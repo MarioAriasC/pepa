@@ -199,6 +199,36 @@ module Ast
       "(#{@left}[#{@index}])"
     end
   end
+
+  class IfExpression < Expression
+    include TokenHolder
+    attr_reader :condition, :consequence, :alternative
+
+    def initialize(token, condition, consequence, alternative)
+      @token = token
+      @condition = condition
+      @consequence = consequence
+      @alternative = alternative
+    end
+
+    def to_s
+      "if(#{@condition}) #{@consequence} #{@alternative ? "else #{@alternative}" : ""}"
+    end
+  end
+
+  class BlockStatement < Statement
+    include TokenHolder
+    attr_reader :statements
+
+    def initialize(token, statements)
+      @token = token
+      @statements = statements
+    end
+
+    def to_s
+      @statements.or_else([]).join
+    end
+  end
 end
 
 class Object

@@ -16,8 +16,8 @@ def create_program(input)
   program
 end
 
-def count_statements(i, program)
-  assert_equal program.statements.size, i
+def count_statements(count, program)
+  assert_equal count, program.statements.size
 end
 
 def test_let_statement(statement, expected_identifier)
@@ -52,4 +52,15 @@ def test_infix_expression(expression, left_value, operator, right_value)
   test_literal_expression(expression.left, left_value)
   assert_equal expression.operator, operator
   test_literal_expression(expression.right, right_value)
+end
+
+def test_identifier(expression, string)
+  assert_equal string, expression.value
+  assert_equal string, expression.token_literal
+end
+
+def test_branch(branch, value)
+  statements = branch.statements
+  assert_equal 1, statements.size
+  test_identifier(statements[0].expression, value)
 end

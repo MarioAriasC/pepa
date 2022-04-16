@@ -210,5 +210,36 @@ describe "Parsers::Parser" do
         assert_equal expected, program.to_s
       end
     end
+
+    it "boolean expressions" do
+      [
+        ["true", true],
+        ["false", false]
+      ].each do |input, expected_boolean|
+        program = create_program(input)
+        count_statements(1, program)
+        bool_literal = program.statements[0].expression
+        assert_equal expected_boolean, bool_literal.value
+      end
+    end
+
+    it "if expression" do
+      input = "if (x < y) { x }"
+      program = create_program(input)
+      count_statements(1, program)
+      if_expression = program.statements[0].expression
+      test_infix_expression(if_expression.condition, "x", "<", "y")
+      test_branch(if_expression.consequence, "x")
+    end
+
+    it "if else expression" do
+      input = "if (x < y) { x } else { y }"
+      program = create_program(input)
+      count_statements(1, program)
+      if_expression = program.statements[0].expression
+      test_infix_expression(if_expression.condition, "x", "<", "y")
+      test_branch(if_expression.consequence, "x")
+      test_branch(if_expression.alternative, "y")
+    end
   end
 end

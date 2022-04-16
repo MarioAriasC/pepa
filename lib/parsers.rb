@@ -45,7 +45,8 @@ module Parsers
         Tokens::BANG => method(:parse_prefix_expression),
         Tokens::MINUS => method(:parse_prefix_expression),
         Tokens::LPAREN => method(:parse_group_expression),
-        Tokens::LBRACKET => method(:parse_array_literal)
+        Tokens::LBRACKET => method(:parse_array_literal),
+        Tokens::IF => method(:parse_if_expression)
         # Tokens::FUNCTION => method(:parse_function_literal)
       }.freeze
 
@@ -216,6 +217,44 @@ module Parsers
       return nil unless expect_peek?(Tokens::RBRACKET)
 
       Ast::IndexExpression.new(token, left, index)
+    end
+
+    def parse_if_expression
+      token = @cur_token
+
+      return nil unless expect_peek?(Tokens::LPAREN)
+
+      next_token
+      condition = parse_expression(Precedence::LOWEST)
+      return nil unless expect_peek?(Tokens::RPAREN)
+
+      return nil unless expect_peek?(Tokens::LBRACE)
+
+      consequence = parse_block_statement
+
+      alternative = if peek_token_is?(Tokens::ELSE)
+                      next_token
+                      return nil unless expect_peek?(Tokens::LBRACE)
+
+                      parse_block_statement
+                    end
+
+      Ast::IfExpression.new(token, condition, consequence, alternative)
+    end
+
+    def parse_block_statement
+      token = @cur_token
+      statements = []
+      next_token
+
+      while !cur_token_is(Tokens::RBRACE) && !cur_token_is(Tokens::EOF)
+        statement = parse_statement
+        statements << statement unless statement.nil?
+
+        next_token
+      end
+
+      Ast::BlockStatement.new(token, statements)
     end
 
     def expect_peek?(token_type)
