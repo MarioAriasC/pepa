@@ -254,5 +254,21 @@ describe "Parsers::Parser" do
       assert_equal 1, statements.size
       test_infix_expression(statements[0].expression, "x", "+", "y")
     end
+
+    it "function parameter parsing" do
+      [
+        ["fn () {}", []],
+        ["fn (x) {}", ["x"]],
+        ["fn (x, y, z) {}", %w[x y z]]
+      ].each do |input, expected_params|
+        program = create_program(input)
+        function_literal = program.statements[0].expression
+        parameters = function_literal.parameters
+        assert_equal expected_params.size, parameters.size
+        expected_params.each_with_index do |expected_param, i|
+          test_literal_expression(parameters[i], expected_param)
+        end
+      end
+    end
   end
 end
