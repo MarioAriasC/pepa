@@ -241,5 +241,18 @@ describe "Parsers::Parser" do
       test_branch(if_expression.consequence, "x")
       test_branch(if_expression.alternative, "y")
     end
+
+    it "function literal parsing" do
+      input = "fn(x, y) { x + y;}"
+      program = create_program(input)
+      function_literal = program.statements[0].expression
+      parameters = function_literal.parameters
+      test_literal_expression(parameters[0], "x")
+      test_literal_expression(parameters[1], "y")
+      body = function_literal.body
+      statements = body.statements
+      assert_equal 1, statements.size
+      test_infix_expression(statements[0].expression, "x", "+", "y")
+    end
   end
 end

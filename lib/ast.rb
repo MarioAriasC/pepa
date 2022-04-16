@@ -229,6 +229,21 @@ module Ast
       @statements.or_else([]).join
     end
   end
+
+  class FunctionLiteral < Expression
+    include TokenHolder
+    attr_reader :parameters, :body
+
+    def initialize(token, parameters, body)
+      @token = token
+      @parameters = parameters
+      @body = body
+    end
+
+    def to_s
+      "#{token_literal}(#{@parameters.or_else([]).join(", ")}) {#{@body}}"
+    end
+  end
 end
 
 class Object

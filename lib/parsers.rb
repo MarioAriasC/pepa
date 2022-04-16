@@ -46,8 +46,8 @@ module Parsers
         Tokens::MINUS => method(:parse_prefix_expression),
         Tokens::LPAREN => method(:parse_group_expression),
         Tokens::LBRACKET => method(:parse_array_literal),
-        Tokens::IF => method(:parse_if_expression)
-        # Tokens::FUNCTION => method(:parse_function_literal)
+        Tokens::IF => method(:parse_if_expression),
+        Tokens::FUNCTION => method(:parse_function_literal)
       }.freeze
 
       @infix_parsers = {
@@ -257,12 +257,46 @@ module Parsers
       Ast::BlockStatement.new(token, statements)
     end
 
+    def parse_function_literal
+      token = @cur_token
+      return nil unless expect_peek?(Tokens::LPAREN)
+
+      parameters = parse_function_parameters
+      return nil unless expect_peek?(Tokens::LBRACE)
+
+      body = parse_block_statement
+      Ast::FunctionLiteral.new(token, parameters, body)
+    end
+
+    def parse_function_parameters
+      parameters = []
+      if peek_token_is?(Tokens::RPAREN)
+        next_token
+        return parameters
+      end
+
+      next_token
+      token = @cur_token
+      parameters << Ast::Identifier.new(token, token.literal)
+
+      while peek_token_is?(Tokens::COMMA)
+        next_token
+        next_token
+        inner_token = @cur_token
+        parameters << Ast::Identifier.new(inner_token, inner_token.literal)
+      end
+
+      return nil unless expect_peek?(Tokens::RPAREN)
+
+      parameters
+    end
+
     def expect_peek?(token_type)
       if peek_token_is?(token_type)
         next_token
         true
       else
-        peek_error(type)
+        peek_error(token_type)
         false
       end
     end
@@ -273,6 +307,10 @@ module Parsers
 
     def no_prefix_parse_error(token_type)
       @errors << "no prefix parsers for '#{token_type}' function"
+    end
+
+    def peek_error(token_type)
+      @errors << "Expected next token to be #{token_type}, got #{@peek_token.type} instead"
     end
 
     def cur_token_is(token_type)
