@@ -2,6 +2,7 @@
 
 require "lexers"
 require "parsers"
+require "evaluator"
 
 def check_parser_errors(parser)
   errors = parser.errors
@@ -63,4 +64,9 @@ def test_branch(branch, value)
   statements = branch.statements
   assert_equal 1, statements.size
   test_identifier(statements[0].expression, value)
+end
+
+def test_eval(input)
+  program = create_program(input)
+  Evaluator.evaluate(program, Evaluator::Environment.new)
 end

@@ -1,33 +1,33 @@
 module Ast
   class Node
-    def token_literal: () -> nil
+    def token_literal: () -> String
   end
 
   class Statement < Node
   end
 
   class Expression < Node
-    def eql?: (untyped other) -> untyped
+    def eql?: (untyped other) -> bool
   end
 
   module TokenHolder
-    attr_reader token: untyped
+    attr_reader token: Tokens::Token
 
-    def token_literal: () -> untyped
+    def token_literal: () -> String
   end
 
   module LiteralExpression
-    def to_s: () -> untyped
+    def to_s: () -> String
   end
 
   class Program < Node
-    attr_reader statements: untyped
+    attr_reader statements: Array[Statement]
 
-    def initialize: (untyped statements) -> void
+    def initialize: (Array[Statement] statements) -> void
 
-    def token_literal: () -> untyped
+    def token_literal: () -> String
 
-    def to_s: () -> untyped
+    def to_s: () -> String
   end
 
   class Identifier < Expression
@@ -37,7 +37,7 @@ module Ast
 
     def initialize: (untyped token, untyped value) -> void
 
-    def to_s: () -> untyped
+    def to_s: () -> String
   end
 
   class LetStatement < Statement
@@ -59,7 +59,7 @@ module Ast
 
     def initialize: (untyped token, untyped expression) -> void
 
-    def to_s: () -> untyped
+    def to_s: () -> String
   end
 
   class IntegerLiteral < Expression
@@ -95,11 +95,11 @@ module Ast
   class PrefixExpression < Expression
     include TokenHolder
 
-    attr_reader operator: untyped
+    attr_reader operator: String
 
-    attr_reader right: untyped
+    attr_reader right: Expression
 
-    def initialize: (untyped token, untyped operator, untyped right) -> void
+    def initialize: (Tokens::Token token, String operator, Expression right) -> void
 
     def to_s: () -> ::String
   end
@@ -107,13 +107,13 @@ module Ast
   class InfixExpression < Expression
     include TokenHolder
 
-    attr_reader left: untyped
+    attr_reader left: Expression
 
-    attr_reader operator: untyped
+    attr_reader operator: String
 
-    attr_reader right: untyped
+    attr_reader right: Expression
 
-    def initialize: (untyped token, untyped left, untyped operator, untyped right) -> void
+    def initialize: (Tokens::Token token, Expression left, String operator, Expression right) -> void
 
     def to_s: () -> ::String
   end
@@ -173,7 +173,7 @@ module Ast
 
     def initialize: (untyped token, untyped statements) -> void
 
-    def to_s: () -> untyped
+    def to_s: () -> String
   end
 
   class FunctionLiteral < Expression
@@ -195,7 +195,7 @@ module Ast
 
     def initialize: (untyped token, untyped value) -> void
 
-    def to_s: () -> untyped
+    def to_s: () -> String
   end
 
   class HashLiteral < Expression
