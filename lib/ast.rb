@@ -160,6 +160,7 @@ module Ast
 
   class CallExpression < Expression
     include TokenHolder
+    attr_reader :function, :arguments
 
     def initialize(token, function, arguments)
       @token = token
@@ -174,6 +175,7 @@ module Ast
 
   class ArrayLiteral < Expression
     include TokenHolder
+    attr_reader :elements
 
     def initialize(token, elements)
       @token = token
@@ -242,6 +244,34 @@ module Ast
 
     def to_s
       "#{token_literal}(#{@parameters.or_else([]).join(", ")}) {#{@body}}"
+    end
+  end
+
+  class StringLiteral < Expression
+    include TokenHolder
+    attr_reader :value
+
+    def initialize(token, value)
+      @token = token
+      @value = value
+    end
+
+    def to_s
+      @value
+    end
+  end
+
+  class HashLiteral < Expression
+    include TokenHolder
+    attr_reader :pairs
+
+    def initialize(token, pairs)
+      @token = token
+      @pairs = pairs
+    end
+
+    def to_s
+      "{#{@pairs.map { |key, value| "#{key}:#{value}" }.join(", ")}}"
     end
   end
 end

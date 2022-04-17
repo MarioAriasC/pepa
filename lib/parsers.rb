@@ -47,7 +47,9 @@ module Parsers
         Tokens::LPAREN => method(:parse_group_expression),
         Tokens::LBRACKET => method(:parse_array_literal),
         Tokens::IF => method(:parse_if_expression),
-        Tokens::FUNCTION => method(:parse_function_literal)
+        Tokens::FUNCTION => method(:parse_function_literal),
+        Tokens::STRING => method(:parse_string_literal),
+        Tokens::LBRACE => method(:parse_hash_literal)
       }.freeze
 
       @infix_parsers = {
@@ -77,6 +79,10 @@ module Parsers
     end
 
     private
+
+    def parse_string_literal
+      Ast::StringLiteral.new(@cur_token, @cur_token.literal)
+    end
 
     def next_token
       @cur_token = @peek_token
@@ -289,6 +295,27 @@ module Parsers
       return nil unless expect_peek?(Tokens::RPAREN)
 
       parameters
+    end
+
+    def parse_hash_literal
+      token = @cur_token
+      pairs = {}
+      until peek_token_is?(Tokens::RBRACE)
+        next_token
+        key = parse_expression(Precedence::LOWEST)
+        return nil unless expect_peek?(Tokens::COLON)
+
+        next_token
+        value = parse_expression(Precedence::LOWEST)
+        pairs[key] = value
+
+        return nil if !peek_token_is?(Tokens::RBRACE) && !expect_peek?(Tokens::COMMA)
+
+      end
+
+      return nil unless expect_peek?(Tokens::RBRACE)
+
+      Ast::HashLiteral.new(token, pairs)
     end
 
     def expect_peek?(token_type)

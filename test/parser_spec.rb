@@ -270,5 +270,53 @@ describe "Parsers::Parser" do
         end
       end
     end
+
+    it "call expression parsing" do
+      input = "add(1, 2 * 3, 4+5)"
+      program = create_program(input)
+      count_statements(1, program)
+      call_expression = program.statements[0].expression
+      test_identifier(call_expression.function, "add")
+      arguments = call_expression.arguments
+      test_literal_expression(arguments[0], 1)
+      test_infix_expression(arguments[1], 2, "*", 3)
+      test_infix_expression(arguments[2], 4, "+", 5)
+    end
+
+    it "string literal expression" do
+      input = %("hello world";)
+      program = create_program(input)
+      count_statements(1, program)
+      assert_equal "hello world", program.statements[0].expression.value
+    end
+
+    it "parsing literal array" do
+      input = "[1, 2 * 2, 3 + 3]"
+      program = create_program(input)
+      elements = program.statements[0].expression.elements
+      test_literal_expression(elements[0], 1)
+      test_infix_expression(elements[1], 2, "*", 2)
+      test_infix_expression(elements[2], 3, "+", 3)
+    end
+
+    it "parsing index expression" do
+      input = "myArray[1 + 1]"
+      program = create_program(input)
+      index_expression = program.statements[0].expression
+      test_identifier(index_expression.left, "myArray")
+      test_infix_expression(index_expression.index, 1, "+", 1)
+    end
+
+    it "hash literal string keys" do
+      input = %({"one": 1, "two": 2, "three": 3})
+      program = create_program(input)
+      hash_literal = program.statements[0].expression
+      assert_equal 3, hash_literal.pairs.size
+      expected = { "one" => 1, "two" => 2, "three" => 3 }
+      hash_literal.pairs.each do |key, value|
+        expected_value = expected[key.to_s]
+        test_literal_expression(value, expected_value)
+      end
+    end
   end
 end

@@ -1,19 +1,19 @@
 module Ast
   class Node
-    def token_literal: () -> String
+    def token_literal: () -> nil
   end
 
   class Statement < Node
   end
 
   class Expression < Node
-    def eql?: (untyped other) -> bool
+    def eql?: (untyped other) -> untyped
   end
 
   module TokenHolder
-    attr_reader token: Tokens::Token
+    attr_reader token: untyped
 
-    def token_literal: () -> String
+    def token_literal: () -> untyped
   end
 
   module LiteralExpression
@@ -21,18 +21,194 @@ module Ast
   end
 
   class Program < Node
-    attr_reader statements: Array[Statement]
+    attr_reader statements: untyped
 
-    def initialize: (Array[Statement] statements) -> void
+    def initialize: (untyped statements) -> void
 
-    def token_literal: () -> String
+    def token_literal: () -> untyped
+
+    def to_s: () -> untyped
+  end
+
+  class Identifier < Expression
+    include TokenHolder
+
+    attr_reader value: untyped
+
+    def initialize: (untyped token, untyped value) -> void
+
+    def to_s: () -> untyped
   end
 
   class LetStatement < Statement
     include TokenHolder
+
+    attr_reader name: untyped
+
+    attr_reader value: untyped
+
+    def initialize: (untyped token, untyped name, untyped value) -> void
+
+    def to_s: () -> ::String
+  end
+
+  class ExpressionStatement < Statement
+    include TokenHolder
+
+    attr_reader expression: untyped
+
+    def initialize: (untyped token, untyped expression) -> void
+
+    def to_s: () -> untyped
+  end
+
+  class IntegerLiteral < Expression
+    include TokenHolder
+
+    include LiteralExpression
+
+    attr_reader value: untyped
+
+    def initialize: (untyped token, untyped value) -> void
+  end
+
+  class BooleanLiteral < Expression
+    include TokenHolder
+
+    include LiteralExpression
+
+    attr_reader value: untyped
+
+    def initialize: (untyped token, untyped value) -> void
   end
 
   class ReturnStatement < Statement
+    include TokenHolder
 
+    attr_reader return_value: untyped
+
+    def initialize: (untyped token, untyped return_value) -> void
+
+    def to_s: () -> ::String
   end
+
+  class PrefixExpression < Expression
+    include TokenHolder
+
+    attr_reader operator: untyped
+
+    attr_reader right: untyped
+
+    def initialize: (untyped token, untyped operator, untyped right) -> void
+
+    def to_s: () -> ::String
+  end
+
+  class InfixExpression < Expression
+    include TokenHolder
+
+    attr_reader left: untyped
+
+    attr_reader operator: untyped
+
+    attr_reader right: untyped
+
+    def initialize: (untyped token, untyped left, untyped operator, untyped right) -> void
+
+    def to_s: () -> ::String
+  end
+
+  class CallExpression < Expression
+    include TokenHolder
+
+    attr_reader function: untyped
+
+    attr_reader arguments: untyped
+
+    def initialize: (untyped token, untyped function, untyped arguments) -> void
+
+    def to_s: () -> ::String
+  end
+
+  class ArrayLiteral < Expression
+    include TokenHolder
+
+    attr_reader elements: untyped
+
+    def initialize: (untyped token, untyped elements) -> void
+
+    def to_s: () -> ::String
+  end
+
+  class IndexExpression < Expression
+    include TokenHolder
+
+    attr_reader left: untyped
+
+    attr_reader index: untyped
+
+    def initialize: (untyped token, untyped left, untyped index) -> void
+
+    def to_s: () -> ::String
+  end
+
+  class IfExpression < Expression
+    include TokenHolder
+
+    attr_reader condition: untyped
+
+    attr_reader consequence: untyped
+
+    attr_reader alternative: untyped
+
+    def initialize: (untyped token, untyped condition, untyped consequence, untyped alternative) -> void
+
+    def to_s: () -> ::String
+  end
+
+  class BlockStatement < Statement
+    include TokenHolder
+
+    attr_reader statements: untyped
+
+    def initialize: (untyped token, untyped statements) -> void
+
+    def to_s: () -> untyped
+  end
+
+  class FunctionLiteral < Expression
+    include TokenHolder
+
+    attr_reader parameters: untyped
+
+    attr_reader body: untyped
+
+    def initialize: (untyped token, untyped parameters, untyped body) -> void
+
+    def to_s: () -> ::String
+  end
+
+  class StringLiteral < Expression
+    include TokenHolder
+
+    attr_reader value: untyped
+
+    def initialize: (untyped token, untyped value) -> void
+
+    def to_s: () -> untyped
+  end
+
+  class HashLiteral < Expression
+    include TokenHolder
+
+    attr_reader pairs: untyped
+
+    def initialize: (untyped token, untyped pairs) -> void
+
+    def to_s: () -> ::String
+  end
+end
+
+class Object
+  def or_else: (untyped alternative) -> untyped
 end
