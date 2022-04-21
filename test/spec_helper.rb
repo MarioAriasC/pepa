@@ -70,3 +70,32 @@ def test_eval(input)
   program = create_program(input)
   Evaluator.evaluate(program, Evaluator::Environment.new)
 end
+
+def test_integer(input, expected)
+  evaluated = test_eval(input)
+  test_integer_object(evaluated, expected)
+end
+
+def test_integer_object(evaluated, expected)
+  case evaluated
+  when Objects::MInteger
+    assert_equal expected, evaluated.value
+  else
+    raise "obj is not MInteger, got #{evaluated.class}, #{evaluated}"
+  end
+end
+
+def test_boolean(input, expected)
+  # p input
+  evaluated = test_eval(input)
+  case evaluated
+  when Objects::MBoolean
+    assert_equal expected, evaluated.value
+  else
+    raise "obj is not MBoolean, got #{evaluated.class}, #{evaluated}"
+  end
+end
+
+def test_nil_object(obj)
+  assert_equal Objects::M_NULL, obj
+end

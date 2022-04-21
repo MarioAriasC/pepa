@@ -14,6 +14,21 @@ module Objects
         yield self
       end
     end
+
+    def is_truthy?
+      case self
+      when MBoolean
+        value
+      when MNull
+        false
+      else
+        true
+      end
+    end
+
+    def is_error?
+      is_a?(MError)
+    end
   end
 
   class MValue < MObject
@@ -60,6 +75,10 @@ module Objects
     def >(other)
       @value > other.value
     end
+
+    def ==(other)
+      @value == other.value
+    end
   end
 
   class MReturnValue < MObject
@@ -89,4 +108,34 @@ module Objects
       "MError(message=#{@message})"
     end
   end
+
+  class MBoolean < MValue
+    def ==(other)
+      @value == other.value
+    end
+  end
+
+  class MNull < MObject
+    def to_s
+      "null"
+    end
+  end
+
+  class MFunction < MObject
+    attr_reader :environment, :body, :parameters
+
+    def initialize(parameters, body, environment)
+      @parameters = parameters
+      @body = body
+      @environment = environment
+    end
+
+    def inspect
+      parameters = ""
+      parameters = @parameters.map(&:to_s).join(", ") unless @parameters.nil?
+      "fn(#{parameters}) {\n\t#{body}\n}"
+    end
+  end
+
+  M_NULL = MNull.new
 end
