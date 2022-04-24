@@ -15,7 +15,7 @@ module Objects
       end
     end
 
-    def is_truthy?
+    def truthy?
       case self
       when MBoolean
         value
@@ -26,7 +26,7 @@ module Objects
       end
     end
 
-    def is_error?
+    def error?
       is_a?(MError)
     end
   end

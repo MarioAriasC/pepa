@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby --yjit
 # frozen_string_literal: true
 
-require_relative "../lib/pepa"
+require_relative "../lib/benchmarks"
 
-Pepa.main
+Benchmarks.eval

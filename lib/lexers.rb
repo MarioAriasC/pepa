@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "tokens"
+require_relative "tokens"
 
 module Lexers
   WHITE_SPACES = [" ", "\t", "\n", "\r"].freeze

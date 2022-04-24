@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require "tokens"
-require "ast"
+require_relative "tokens"
+require_relative "ast"
 
 module Parsers
   module Precedence
