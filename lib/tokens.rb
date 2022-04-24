@@ -27,7 +27,7 @@ module Tokens
   INT = TokenType.new("INT")
 
   PLUS = TokenType.new("+")
-  COMMA = TokenType.new("")
+  COMMA = TokenType.new(",")
   SEMICOLON = TokenType.new(";")
   COLON = TokenType.new(":")
   MINUS = TokenType.new("-")

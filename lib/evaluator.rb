@@ -5,7 +5,13 @@ module Evaluator
   M_TRUE = Objects::MBoolean.new(true)
   M_FALSE = Objects::MBoolean.new(false)
 
-  BUILTINS = {}.freeze
+  BUILTINS = {
+    Objects::LEN_NAME => Objects::LEN_BUILTIN,
+    Objects::PUSH_NAME => Objects::PUSH_BUILTIN,
+    Objects::FIRST_NAME => Objects::FIRST_BUILTIN,
+    Objects::LAST_NAME => Objects::LAST_BUILTIN,
+    Objects::REST_NAME => Objects::REST_BUILTIN
+  }.freeze
 
   class Environment
     attr_reader :store, :outer
@@ -29,7 +35,17 @@ module Evaluator
     end
   end
 
+  TC = {}
+
   def self.evaluate(node, environment)
+    node_class_name = node.class.to_s
+    tc_value = TC[node_class_name]
+    if tc_value.nil?
+      TC[node_class_name] = 1
+    else
+      TC[node_class_name] = tc_value + 1
+    end
+    # puts TC
     case node
     when Ast::Program
       eval_program(node.statements, environment)
@@ -74,6 +90,25 @@ module Evaluator
       end
     when Ast::Identifier
       eval_identifier(node, environment)
+    when Ast::StringLiteral
+      Objects::MString.new(node.value)
+    when Ast::IndexExpression
+      left = evaluate(node.left, environment)
+      return left if left.is_error?
+
+      index = evaluate(node.index, environment)
+      return index if index.is_error?
+
+      eval_index_expression(left, index)
+    when Ast::HashLiteral
+      eval_hash_literal(node, environment)
+    when Ast::ArrayLiteral
+      elements = eval_expressions(node.elements, environment)
+      if elements.size == 1 && elements[0].is_error?
+        elements[0]
+      else
+        Objects::MArray.new(elements)
+      end
     else
       p node
       nil
@@ -107,6 +142,59 @@ module Evaluator
     end
   end
 
+  def self.eval_index_expression(left, index)
+    if left.is_a?(Objects::MArray) && index.is_a?(Objects::MInteger)
+      eval_array_index_expression(left, index)
+    elsif left.is_a?(Objects::MHash)
+      eval_hash_index_expression(left, index)
+    else
+      Objects::MError.new("index operator not supported: #{left.type_desc}")
+    end
+  end
+
+  def self.eval_array_index_expression(array, index)
+    elements = array.elements
+    i = index.value
+    max = elements.size - 1
+    return Objects::M_NULL if i.negative? || i > max
+
+    elements[i]
+  end
+
+  def self.eval_hash_index_expression(hash, index)
+    case index
+    when Objects::MValue
+      pair = hash.pairs[index.hash_key]
+      if pair.nil?
+        Objects::M_NULL
+      else
+        pair.value
+      end
+    else
+      Objects::MError.new("unusable as a hash key: #{index.type_desc}")
+    end
+  end
+
+  def self.eval_hash_literal(hash_literal, environment)
+    pairs = {}
+    hash_literal.pairs.each do |key_node, value_node|
+      key = evaluate(key_node, environment)
+      return key if key.is_error?
+
+      case key
+      when Objects::MValue
+        value = evaluate(value_node, environment)
+        return value if value.is_error?
+
+        pairs[key.hash_key] = Objects::HashPair.new(key, value)
+      else
+        return Objects::MError.new("unusable as hash key: #{key.type_desc}")
+      end
+    end
+
+    Objects::MHash.new(pairs)
+  end
+
   def self.eval_bang_operator_expression(right)
     case right
     when M_TRUE
@@ -135,13 +223,20 @@ module Evaluator
       extend_env = extend_function_env(function, args)
       evaluated = evaluate(function.body, extend_env)
       unwrap_return_value(evaluated)
+    when Objects::MBuiltinFunction
+      result = function.fn.call(args)
+      if result.nil?
+        Objects::M_NULL
+      else
+        result
+      end
     else
       Objects::MError.new("not a function: #{function.type_desc}")
     end
   end
 
   def self.extend_function_env(function, args)
-    env = Environment.new(function.environment)
+    env = Environment.new({}, function.environment)
     function.parameters&.each_with_index do |identifier, i|
       env[identifier.value] = args[i]
     end
@@ -212,6 +307,18 @@ module Evaluator
       (left == right).to_m
     elsif operator == "!="
       (left != right).to_m
+    elsif left.type_desc != right.type_desc
+      Objects::MError.new("type mismatch: #{left.type_desc} #{operator} #{right.type_desc}")
+    elsif left.is_a?(Objects::MString) && right.is_a?(Objects::MString)
+      eval_string_infix_expression(operator, left, right)
+    else
+      Objects::MError.new("unknown operator: #{left.class} #{operator} #{right.class}")
+    end
+  end
+
+  def self.eval_string_infix_expression(operator, left, right)
+    if operator == "+"
+      left + right
     else
       Objects::MError.new("unknown operator: #{left.class} #{operator} #{right.class}")
     end
@@ -254,5 +361,13 @@ end
 class NilClass
   def if_not_error(&)
     self
+  end
+
+  def is_error?
+    false
+  end
+
+  def type_desc
+    "nil"
   end
 end

@@ -96,6 +96,16 @@ def test_boolean(input, expected)
   end
 end
 
+def test_string(input, expected)
+  evaluated = test_eval(input)
+  case evaluated
+  when Objects::MString
+    assert_equal expected, evaluated.value
+  else
+    raise "obj is not MString, got #{evaluated.class}, #{evaluated}"
+  end
+end
+
 def test_nil_object(obj)
   assert_equal Objects::M_NULL, obj
 end
