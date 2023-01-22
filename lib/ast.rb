@@ -28,19 +28,11 @@ module Ast
     end
   end
 
-  class Program < Node
+  class Program
     attr_reader :statements
 
     def initialize(statements)
       @statements = statements
-    end
-
-    def token_literal
-      if @statements.empty?
-        ""
-      else
-        @statements[1].token_literal
-      end
     end
 
     def to_s

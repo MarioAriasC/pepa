@@ -1,0 +1,7 @@
+module Evaluator
+  class Environment
+
+  end
+
+  def self.evaluate: (Ast::Program program, Environment environment) -> Objects::MObject
+end

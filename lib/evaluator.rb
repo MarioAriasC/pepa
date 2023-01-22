@@ -35,28 +35,40 @@ module Evaluator
     end
   end
 
-  def self.evaluate(node, environment)
+  def self.evaluate(program, environment)
+    result = nil
+    program.statements.each do |statement|
+      result = inner_eval(statement, environment)
+      case result
+      when Objects::MReturnValue
+        return result.value
+      when Objects::MError
+        return result
+      end
+    end
+    result
+  end
+
+  def self.inner_eval(node, environment)
     case node
-    when Ast::Program
-      eval_program(node.statements, environment)
     when Ast::Identifier
       eval_identifier(node, environment)
     when Ast::IntegerLiteral
       Objects::MInteger.new(node.value)
     when Ast::InfixExpression
-      evaluate(node.left, environment).if_not_error do |left|
-        evaluate(node.right, environment).if_not_error do |right|
+      inner_eval(node.left, environment).if_not_error do |left|
+        inner_eval(node.right, environment).if_not_error do |right|
           eval_infix_expression(node.operator, left, right)
         end
       end
     when Ast::BlockStatement
       eval_block_statement(node, environment)
     when Ast::ExpressionStatement
-      evaluate(node.expression, environment)
+      inner_eval(node.expression, environment)
     when Ast::IfExpression
       eval_if_expression(node, environment)
     when Ast::CallExpression
-      evaluate(node.function, environment).if_not_error do |function|
+      inner_eval(node.function, environment).if_not_error do |function|
         args = eval_expressions(node.arguments, environment)
         if args.size == 1 && args[0].error?
           args[0]
@@ -65,17 +77,17 @@ module Evaluator
         end
       end
     when Ast::ReturnStatement
-      evaluate(node.return_value, environment).if_not_error do |value|
+      inner_eval(node.return_value, environment).if_not_error do |value|
         Objects::MReturnValue.new(value)
       end
     when Ast::PrefixExpression
-      evaluate(node.right, environment).if_not_error do |right|
+      inner_eval(node.right, environment).if_not_error do |right|
         eval_prefix_expression(node.operator, right)
       end
     when Ast::BooleanLiteral
       node.value.to_m
     when Ast::LetStatement
-      evaluate(node.value, environment).if_not_error do |value|
+      inner_eval(node.value, environment).if_not_error do |value|
         environment[node.name.value] = value
       end
     when Ast::FunctionLiteral
@@ -83,10 +95,10 @@ module Evaluator
     when Ast::StringLiteral
       Objects::MString.new(node.value)
     when Ast::IndexExpression
-      left = evaluate(node.left, environment)
+      left = inner_eval(node.left, environment)
       return left if left.error?
 
-      index = evaluate(node.index, environment)
+      index = inner_eval(node.index, environment)
       return index if index.error?
 
       eval_index_expression(left, index)
@@ -103,20 +115,6 @@ module Evaluator
       p node
       nil
     end
-  end
-
-  def self.eval_program(statements, environment)
-    result = nil
-    statements.each do |statement|
-      result = evaluate(statement, environment)
-      case result
-      when Objects::MReturnValue
-        return result.value
-      when Objects::MError
-        return result
-      end
-    end
-    result
   end
 
   def self.eval_minus_prefix_operator_expression(right)
@@ -168,12 +166,12 @@ module Evaluator
   def self.eval_hash_literal(hash_literal, environment)
     pairs = {}
     hash_literal.pairs.each do |key_node, value_node|
-      key = evaluate(key_node, environment)
+      key = inner_eval(key_node, environment)
       return key if key.error?
 
       case key
       when Objects::MValue
-        value = evaluate(value_node, environment)
+        value = inner_eval(value_node, environment)
         return value if value.error?
 
         pairs[key.hash_key] = Objects::HashPair.new(key, value)
@@ -200,7 +198,7 @@ module Evaluator
 
   def self.eval_expressions(arguments, environment)
     arguments.map do |argument|
-      evaluated = evaluate(argument, environment)
+      evaluated = inner_eval(argument, environment)
       return [evaluated] if evaluated.error?
 
       evaluated
@@ -211,7 +209,7 @@ module Evaluator
     case function
     when Objects::MFunction
       extend_env = extend_function_env(function, args)
-      evaluated = evaluate(function.body, extend_env)
+      evaluated = inner_eval(function.body, extend_env)
       unwrap_return_value(evaluated)
     when Objects::MBuiltinFunction
       result = function.fn.call(args)
@@ -315,11 +313,11 @@ module Evaluator
   end
 
   def self.eval_if_expression(if_expression, environment)
-    evaluate(if_expression.condition, environment).if_not_error do |condition|
+    inner_eval(if_expression.condition, environment).if_not_error do |condition|
       if condition.truthy?
-        evaluate(if_expression.consequence, environment)
+        inner_eval(if_expression.consequence, environment)
       elsif !if_expression.alternative.nil?
-        evaluate(if_expression.alternative, environment)
+        inner_eval(if_expression.alternative, environment)
       else
         Objects::M_NULL
       end
@@ -329,7 +327,7 @@ module Evaluator
   def self.eval_block_statement(block_statement, environment)
     result = nil
     block_statement.statements.each do |statement|
-      result = evaluate(statement, environment)
+      result = inner_eval(statement, environment)
       return result if result.is_a?(Objects::MReturnValue) || result.is_a?(Objects::MError)
     end
     result

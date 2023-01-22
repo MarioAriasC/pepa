@@ -16,7 +16,7 @@ compiler implementation
 
 ## Commands
 
-Before running the command you must have Ruby 3.1.0 installed on your machine
+Before running the command you must have Ruby 3.1.0 or up installed on your machine
 
 | Script                                       | Description                                                |
 |----------------------------------------------|------------------------------------------------------------|

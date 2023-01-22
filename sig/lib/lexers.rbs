@@ -14,9 +14,9 @@ module Lexers
 
     def skip_whitespace: () -> void
 
-    def read_char: () -> untyped
+    def read_char: () -> void
 
-    def peak_char: () -> untyped
+    def peak_char: () -> String
 
   end
 end
