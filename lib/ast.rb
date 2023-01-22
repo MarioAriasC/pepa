@@ -5,15 +5,13 @@ module Ast
     def token_literal; end
   end
 
-  class Statement < Node
-  end
-
   class Expression < Node
     def eql?(other)
       to_s == other.to_s
     end
   end
 
+  Statement = Expression
   module TokenHolder
     attr_reader :token
 
