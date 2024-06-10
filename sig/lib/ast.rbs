@@ -3,9 +3,6 @@ module Ast
     def token_literal: () -> String
   end
 
-  class Statement < Node
-  end
-
   class Expression < Node
     def eql?: (untyped other) -> bool
   end
@@ -21,9 +18,9 @@ module Ast
   end
 
   class Program < Node
-    attr_reader statements: Array[Statement]
+    attr_reader statements: Array[Expression]
 
-    def initialize: (Array[Statement] statements) -> void
+    def initialize: (Array[Expression] statements) -> void
 
     def token_literal: () -> String
 
@@ -40,7 +37,7 @@ module Ast
     def to_s: () -> String
   end
 
-  class LetStatement < Statement
+  class LetStatement < Expression
     include TokenHolder
 
     attr_reader name: untyped
@@ -52,7 +49,7 @@ module Ast
     def to_s: () -> ::String
   end
 
-  class ExpressionStatement < Statement
+  class ExpressionStatement < Expression
     include TokenHolder
 
     attr_reader expression: untyped
@@ -82,7 +79,7 @@ module Ast
     def initialize: (untyped token, untyped value) -> void
   end
 
-  class ReturnStatement < Statement
+  class ReturnStatement < Expression
     include TokenHolder
 
     attr_reader return_value: untyped
@@ -166,7 +163,7 @@ module Ast
     def to_s: () -> ::String
   end
 
-  class BlockStatement < Statement
+  class BlockStatement < Expression
     include TokenHolder
 
     attr_reader statements: untyped

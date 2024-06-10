@@ -12,7 +12,7 @@ module Parsers
 
     def parse_let_statement: () -> (nil | Ast::LetStatement)
 
-    def parse_statement: () -> (nil | Ast::Statement)
+    def parse_statement: () -> (nil | Ast::Expression)
 
     def expect_peek?: (Tokens::TokenType token_type) -> bool
 

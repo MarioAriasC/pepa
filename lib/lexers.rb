@@ -84,9 +84,9 @@ module Lexers
       @input[start..(@position - 1)]
     end
 
-    def read_value(&block)
+    def read_value
       current_position = @position
-      read_char while block.call @ch
+      read_char while yield @ch
       @input[current_position..(@position - 1)]
     end
 
@@ -118,7 +118,7 @@ module Lexers
     end
 
     def skip_whitespace
-      read_char while WHITE_SPACES.any? { |wp| wp == @ch }
+      read_char while WHITE_SPACES.any?(@ch)
     end
 
     def read_char
@@ -146,7 +146,7 @@ class String
     if length > 1
       false
     else
-      match(/[A-Za-z]/) ? true : false
+      match?(/[A-Za-z]/)
     end
   end
 

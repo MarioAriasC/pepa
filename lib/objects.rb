@@ -225,7 +225,8 @@ module Objects
     alias == eql?
 
     def hash
-      @hash_type.hash ^ @value.hash
+      # @hash_type.hash ^ @value.hash
+      [@hash_type, @value].hash
     end
   end
 
