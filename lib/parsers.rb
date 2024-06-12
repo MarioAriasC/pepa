@@ -37,35 +37,77 @@ module Parsers
       @peek_token = Tokens::Token.new(Tokens::ILLEGAL, "")
       @errors = []
 
-      @prefix_parsers = {
-        Tokens::INT => method(:parse_integer_literal),
-        Tokens::TRUE => method(:parse_boolean_literal),
-        Tokens::FALSE => method(:parse_boolean_literal),
-        Tokens::IDENT => method(:parse_identifier),
-        Tokens::BANG => method(:parse_prefix_expression),
-        Tokens::MINUS => method(:parse_prefix_expression),
-        Tokens::LPAREN => method(:parse_group_expression),
-        Tokens::LBRACKET => method(:parse_array_literal),
-        Tokens::IF => method(:parse_if_expression),
-        Tokens::FUNCTION => method(:parse_function_literal),
-        Tokens::STRING => method(:parse_string_literal),
-        Tokens::LBRACE => method(:parse_hash_literal)
-      }.freeze
 
-      @infix_parsers = {
-        Tokens::PLUS => method(:parse_infix_expression),
-        Tokens::MINUS => method(:parse_infix_expression),
-        Tokens::SLASH => method(:parse_infix_expression),
-        Tokens::ASTERISK => method(:parse_infix_expression),
-        Tokens::EQ => method(:parse_infix_expression),
-        Tokens::NOT_EQ => method(:parse_infix_expression),
-        Tokens::LT => method(:parse_infix_expression),
-        Tokens::GT => method(:parse_infix_expression),
-        Tokens::LPAREN => method(:parse_call_expression),
-        Tokens::LBRACKET => method(:parse_index_expression)
-      }.freeze
+      @m_parse_integer_literal = method(:parse_integer_literal).freeze
+      @m_parse_boolean_literal = method(:parse_boolean_literal).freeze
+      @m_parse_identifier = method(:parse_identifier).freeze
+      @m_parse_prefix_expression = method(:parse_prefix_expression).freeze
+      @m_parse_prefix_expression = method(:parse_prefix_expression).freeze
+      @m_parse_group_expression = method(:parse_group_expression).freeze
+      @m_parse_array_literal = method(:parse_array_literal).freeze
+      @m_parse_if_expression = method(:parse_if_expression).freeze
+      @m_parse_function_literal = method(:parse_function_literal).freeze
+      @m_parse_string_literal = method(:parse_string_literal).freeze
+      @m_parse_hash_literal = method(:parse_hash_literal).freeze
+      @m_parse_infix_expression = method(:parse_infix_expression).freeze
+      @m_parse_call_expression = method(:parse_call_expression).freeze
+      @m_parse_index_expression = method(:parse_index_expression).freeze
       next_token
       next_token
+    end
+
+    def prefix_parsers(token)
+      case token
+      when Tokens::INT
+        @m_parse_integer_literal
+      when Tokens::TRUE
+        @m_parse_boolean_literal
+      when Tokens::FALSE
+        @m_parse_boolean_literal
+      when Tokens::IDENT
+        @m_parse_identifier
+      when Tokens::BANG
+        @m_parse_prefix_expression
+      when Tokens::MINUS
+        @m_parse_prefix_expression
+      when Tokens::LPAREN
+        @m_parse_group_expression
+      when Tokens::LBRACKET
+        @m_parse_array_literal
+      when Tokens::IF
+        @m_parse_if_expression
+      when Tokens::FUNCTION
+        @m_parse_function_literal
+      when Tokens::STRING
+        @m_parse_string_literal
+      when Tokens::LBRACE
+        @m_parse_hash_literal
+      end
+    end
+
+    def infix_parsers(token)
+      case token
+      when Tokens::PLUS
+        @m_parse_infix_expression
+      when Tokens::MINUS
+        @m_parse_infix_expression
+      when Tokens::SLASH
+        @m_parse_infix_expression
+      when Tokens::ASTERISK
+        @m_parse_infix_expression
+      when Tokens::EQ
+        @m_parse_infix_expression
+      when Tokens::NOT_EQ
+        @m_parse_infix_expression
+      when Tokens::LT
+        @m_parse_infix_expression
+      when Tokens::GT
+        @m_parse_infix_expression
+      when Tokens::LPAREN
+        @m_parse_call_expression
+      when Tokens::LBRACKET
+        @m_parse_index_expression
+      end
     end
 
     def parse_program
@@ -114,14 +156,14 @@ module Parsers
     end
 
     def parse_expression(precedence)
-      prefix = @prefix_parsers[@cur_token.type]
+      prefix = prefix_parsers(@cur_token.type)
       if prefix.nil?
         no_prefix_parse_error(@cur_token.type)
         return nil
       end
       left = prefix.call
       while !peek_token_is?(Tokens::SEMICOLON) && precedence < peek_precedence
-        infix = @infix_parsers[@peek_token.type]
+        infix = infix_parsers(@peek_token.type)
         return left if infix.nil?
 
         next_token
