@@ -1,0 +1,6 @@
+#!/usr/bin/env -S ruby --yjit
+# frozen_string_literal: true
+
+require_relative "../lib/benchmarks"
+
+Benchmarks.eval
