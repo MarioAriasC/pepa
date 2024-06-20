@@ -14,8 +14,6 @@ module Evaluator
   }.freeze
 
   class Environment
-    attr_reader :store, :outer
-
     def initialize(store = {}, outer = nil)
       @store = store
       @outer = outer

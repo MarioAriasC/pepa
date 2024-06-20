@@ -1,0 +1,211 @@
+module Objects
+  class MObject
+    def type_desc: () -> String
+
+    def if_not_error: () { (MObject) -> MObject? } -> MObject?
+
+    def truthy?: () -> bool
+
+    def error?: () -> bool
+  end
+
+  module HashType
+    INTEGER: 1
+
+    BOOLEAN: 2
+
+    STRING: 4
+  end
+
+  class MValue[T] < MObject
+    @value: T
+
+    attr_reader value: T
+
+    def initialize: (T value) -> void
+
+    def inspect: () -> String
+
+    def hash_type: () -> Integer
+
+    def hash_key: () -> HashKey
+  end
+
+  class MInteger < MValue[Integer]
+    def -@: () -> MInteger
+
+    def +: (MInteger other) -> MInteger
+
+    def -: (MInteger other) -> MInteger
+
+    def *: (MInteger other) -> MInteger
+
+    def /: (MInteger other) -> MInteger
+
+    def <: (MInteger other) -> bool
+
+    def >: (MInteger other) -> bool
+
+    def ==: (MInteger other) -> bool
+
+    def hash_type: () -> Integer
+
+    def hash_key: () -> HashKey
+  end
+
+  class MReturnValue < MObject
+    @value: MObject
+
+    attr_reader value: MObject
+
+    def initialize: (MObject value) -> void
+
+    def inspect: () -> String
+  end
+
+  class MError < MObject
+    @message: String
+
+    attr_reader message: String
+
+    def initialize: (String message) -> void
+
+    def inspect: () -> ::String
+
+    def to_s: () -> ::String
+  end
+
+  class MBoolean < MValue[bool]
+    def ==: (MBoolean other) -> bool
+
+    def hash_type: () -> Integer
+
+    def hash_key: () -> HashKey
+  end
+
+  class MNull < MObject
+    def to_s: () -> "null"
+  end
+
+  class MFunction < MObject
+    @parameters: Array[Ast::Identifier]?
+
+    @body: Ast::BlockStatement?
+
+    @environment: Evaluator::Environment
+
+    attr_reader environment: Evaluator::Environment
+
+    attr_reader body: Ast::BlockStatement?
+
+    attr_reader parameters: Array[Ast::Identifier]?
+
+    def initialize: (Array[Ast::Identifier]? parameters, Ast::BlockStatement? body, Evaluator::Environment environment) -> void
+
+    def inspect: () -> ::String
+  end
+
+  class MString < MValue[String]
+    def +: (MString other) -> MString
+
+    def hash_type: () -> Integer
+
+    def hash_key: () -> HashKey
+  end
+
+  class MArray < MObject
+    @elements: Array[MObject?]
+
+    attr_reader elements: Array[MObject?]
+
+    def initialize: (Array[MObject?] elements) -> void
+
+    def inspect: () -> ::String
+  end
+
+  class MHash < MObject
+    @pairs: Hash[HashKey, HashPair]
+
+    attr_reader pairs: Hash[HashKey, HashPair]
+
+    def initialize: (Hash[HashKey, HashPair] pairs) -> void
+
+    def inspect: () -> ::String
+  end
+
+  class HashPair
+    @key: MObject
+
+    @value: MObject
+
+    attr_reader value: MObject
+
+    attr_reader key: MObject
+
+    def initialize: (MObject key, MObject value) -> void
+  end
+
+  class HashKey
+    @hash_type: Integer
+
+    @value: Integer
+
+    attr_reader value: Integer
+
+    attr_reader hash_type: Integer
+
+    def initialize: (Integer hash_type, Integer value) -> void
+
+    def eql?: (HashKey other) -> bool
+
+    alias == eql?
+
+    def hash: () -> Integer
+  end
+
+  class MBuiltinFunction < MObject
+    @fn: Method
+
+    attr_reader fn: Method
+
+    def initialize: (Method fn) -> void
+
+    def inspect: () -> "builtin function"
+  end
+
+  def self.arg_size_check: (Integer expected_size, Array[MObject?] args) { (Array[MObject?]) -> MObject? } -> MObject?
+
+  def self.array_check: (String builtin_name, Array[MObject?] args) { (MArray, Integer) -> MObject? } -> MObject?
+
+  def self.len: (Array[MObject?] args) -> MObject?
+
+  def self.push: (Array[MObject?] args) -> MObject?
+
+  def self.first: (Array[MObject?] args) -> MObject?
+
+  def self.last: (Array[MObject?] args) -> MObject?
+
+  def self.rest: (Array[MObject?] args) -> MObject?
+
+  M_NULL: MNull
+
+  LEN_NAME: "len"
+
+  LEN_BUILTIN: MBuiltinFunction
+
+  PUSH_NAME: "push"
+
+  PUSH_BUILTIN: MBuiltinFunction
+
+  FIRST_NAME: "first"
+
+  FIRST_BUILTIN: MBuiltinFunction
+
+  LAST_NAME: "last"
+
+  LAST_BUILTIN: MBuiltinFunction
+
+  REST_NAME: "rest"
+
+  REST_BUILTIN: MBuiltinFunction
+end

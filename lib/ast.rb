@@ -11,7 +11,6 @@ module Ast
     end
   end
 
-  Statement = Expression
   module TokenHolder
     attr_reader :token
 
@@ -52,7 +51,7 @@ module Ast
     end
   end
 
-  class LetStatement < Statement
+  class LetStatement < Expression
     include TokenHolder
     attr_reader :name, :value
 
@@ -67,7 +66,7 @@ module Ast
     end
   end
 
-  class ExpressionStatement < Statement
+  class ExpressionStatement < Expression
     include TokenHolder
     attr_reader :expression
 
@@ -103,7 +102,7 @@ module Ast
     end
   end
 
-  class ReturnStatement < Statement
+  class ReturnStatement < Expression
     include TokenHolder
     attr_reader :return_value
 
@@ -208,7 +207,7 @@ module Ast
     end
   end
 
-  class BlockStatement < Statement
+  class BlockStatement < Expression
     include TokenHolder
     attr_reader :statements
 

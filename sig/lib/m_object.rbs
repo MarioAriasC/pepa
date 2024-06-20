@@ -1,5 +1,0 @@
-module Objects
-  class MObject
-    def type_desc: -> String
-  end
-end

@@ -36,8 +36,6 @@ module Parsers
       @cur_token = Tokens::Token.new(Tokens::ILLEGAL, "")
       @peek_token = Tokens::Token.new(Tokens::ILLEGAL, "")
       @errors = []
-
-
       @m_parse_integer_literal = method(:parse_integer_literal).freeze
       @m_parse_boolean_literal = method(:parse_boolean_literal).freeze
       @m_parse_identifier = method(:parse_identifier).freeze
@@ -56,8 +54,8 @@ module Parsers
       next_token
     end
 
-    def prefix_parsers(token)
-      case token
+    def prefix_parsers(token_type)
+      case token_type
       when Tokens::INT
         @m_parse_integer_literal
       when Tokens::TRUE
@@ -85,8 +83,8 @@ module Parsers
       end
     end
 
-    def infix_parsers(token)
-      case token
+    def infix_parsers(token_type)
+      case token_type
       when Tokens::PLUS
         @m_parse_infix_expression
       when Tokens::MINUS
