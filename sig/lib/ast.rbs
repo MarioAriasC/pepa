@@ -5,6 +5,7 @@ module Ast
 
   class Expression < Node
     def eql?: (Expression other) -> bool
+    def to_rb: () -> String
   end
 
   Statement: Expression
@@ -27,6 +28,8 @@ module Ast
     def initialize: (Array[Expression] statements) -> void
 
     def to_s: () -> String
+
+    def to_rb: () -> String
   end
 
   class Identifier < Expression

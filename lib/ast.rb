@@ -9,6 +9,8 @@ module Ast
     def eql?(other)
       to_s == other.to_s
     end
+
+    def to_rb; end
   end
 
   module TokenHolder
@@ -34,6 +36,10 @@ module Ast
 
     def to_s
       @statements.join
+    end
+
+    def to_rb
+      @statements.map(&:to_rb).join("\n")
     end
   end
 
@@ -78,6 +84,10 @@ module Ast
     def to_s
       @expression.or_else("").to_s
     end
+
+    def to_rb
+      @expression.to_rb
+    end
   end
 
   class IntegerLiteral < Expression
@@ -88,6 +98,10 @@ module Ast
     def initialize(token, value)
       @token = token
       @value = value
+    end
+
+    def to_rb
+      to_s
     end
   end
 
@@ -129,6 +143,10 @@ module Ast
     def to_s
       "(#{@operator}#{@right})"
     end
+
+    def to_rb
+      to_s
+    end
   end
 
   class InfixExpression < Expression
@@ -144,6 +162,10 @@ module Ast
 
     def to_s
       "(#{@left} #{operator} #{@right})"
+    end
+
+    def to_rb
+      to_s
     end
   end
 

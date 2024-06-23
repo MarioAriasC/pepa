@@ -1,0 +1,3 @@
+module Transpiler
+  def self.transpile: (Ast::Program program) -> String
+end
