@@ -5,6 +5,7 @@ module Ast
 
   class Expression < Node
     def eql?: (Expression other) -> bool
+
     def to_rb: () -> String
   end
 
@@ -253,13 +254,19 @@ module Ast
 
     @body: BlockStatement?
 
+    @name: String
+
     include TokenHolder
 
     attr_reader parameters: Array[Identifier]?
 
     attr_reader body: BlockStatement?
 
-    def initialize: (Tokens::Token token, Array[Identifier]? parameters, BlockStatement? body) -> void
+    attr_reader name: String
+
+    attr_writer name: String
+
+    def initialize: (Tokens::Token token, Array[Identifier]? parameters, BlockStatement? body, String name) -> void
 
     def to_s: () -> ::String
   end
@@ -281,13 +288,13 @@ module Ast
   class HashLiteral < Expression
     @token: Tokens::Token
 
-    @pairs: Hash[Expression,Expression]
+    @pairs: Hash[Expression, Expression]
 
     include TokenHolder
 
-    attr_reader pairs: Hash[Expression,Expression]
+    attr_reader pairs: Hash[Expression, Expression]
 
-    def initialize: (Tokens::Token token, Hash[Expression,Expression] pairs) -> void
+    def initialize: (Tokens::Token token, Hash[Expression, Expression] pairs) -> void
 
     def to_s: () -> ::String
   end

@@ -162,7 +162,7 @@ module Ast
     end
 
     def to_rb
-      to_s
+      "(#{@operator}#{@right.to_rb})"
     end
   end
 
@@ -182,7 +182,7 @@ module Ast
     end
 
     def to_rb
-      to_s
+      "(#{@left.to_rb} #{operator} #{@right.to_rb})"
     end
   end
 
@@ -231,6 +231,10 @@ module Ast
 
     def to_s
       "(#{@left}[#{@index}])"
+    end
+
+    def to_rb
+      "#{@left.to_rb}[#{@index.to_rb}]"
     end
   end
 
@@ -283,12 +287,14 @@ module Ast
 
   class FunctionLiteral < Expression
     include TokenHolder
+    attr_accessor :name
     attr_reader :parameters, :body
 
-    def initialize(token, parameters, body)
+    def initialize(token, parameters, body, name = "")
       @token = token
       @parameters = parameters
       @body = body
+      @name = name
     end
 
     def to_s
@@ -296,9 +302,14 @@ module Ast
     end
 
     def to_rb
-      "(#{@parameters.or_else([]).map(&:to_rb).join(", ")})
-        #{@body.to_rb}
-      end"
+      if @name == ""
+        # is anonymous
+        "->(#{@parameters.or_else([]).map(&:to_rb).join(", ")}) { #{@body.to_rb} }"
+      else
+        "(#{@parameters.or_else([]).map(&:to_rb).join(", ")})
+          #{@body.to_rb}
+         end"
+      end
     end
   end
 
@@ -314,6 +325,10 @@ module Ast
     def to_s
       @value
     end
+
+    def to_rb
+      %("#{@value}")
+    end
   end
 
   class HashLiteral < Expression
@@ -327,6 +342,10 @@ module Ast
 
     def to_s
       "{#{@pairs.map { |key, value| "#{key}:#{value}" }.join(", ")}}"
+    end
+
+    def to_rb
+      "({#{@pairs.map { |key, value| "#{key.to_rb} => #{value.to_rb}" }.join(", ")}}.freeze)"
     end
   end
 end

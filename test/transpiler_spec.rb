@@ -115,6 +115,55 @@ describe "Transpiler" do
       transpile_and_assert(input, expected)
     end
   end
+
+  it "error handling" do
+    [
+      ["5 + true;", "true can't be coerced into Integer"],
+      ["5 + true; 5;", "true can't be coerced into Integer"],
+      ["-true", "undefined method `-@' for true"],
+      ["true + false;", "undefined method `+' for true"],
+      [
+        "true + false + true + false;",
+        "undefined method `+' for true"
+      ],
+      [
+        "5; true + false; 5",
+        "undefined method `+' for true"
+      ],
+      [
+        "if (10 > 1) { true + false; }",
+        "undefined method `+' for true"
+      ],
+      [
+        "
+            if (10 > 1) {
+              if (10 > 1) {
+                return true + false;
+              }
+
+              return 1;
+            }
+            ",
+        "undefined method `+' for true"
+      ],
+      [
+        "foobar",
+        "undefined local variable or method `foobar' for module Kernel"
+      ],
+      [
+        %("Hello" - "World"),
+        "undefined method `-' for an instance of String"
+      ]
+      # this is valid in Ruby, ie, having a proc as index key
+      # ({"name" => "Monkey"}.freeze)[->(x) { x }]
+      #       [
+      #         %({"name": "Monkey"}[fn(x) {x}];),
+      #         "unusable as a hash key: Objects::MFunction"
+      #       ]
+    ].each do |input, expected|
+      transpile_and_assert(input, expected)
+    end
+  end
 end
 
 def transpile_and_assert(input, expected)
@@ -123,13 +172,18 @@ def transpile_and_assert(input, expected)
   program = create_program(input)
   pp program
   transpiled = Transpiler.transpile(program)
-  pp transpiled
-  result = Kernel.eval(transpiled)
+  p transpiled
+  result = nil
+
+  begin
+    result = Kernel.eval(transpiled)
+  rescue StandardError => e
+    result = e.message
+  end
   pp result
   if expected.nil?
     assert_nil result
   else
     assert_equal expected, result
   end
-
 end
