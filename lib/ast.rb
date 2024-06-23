@@ -59,6 +59,10 @@ module Ast
     def to_s
       @value
     end
+
+    def to_rb
+      @value
+    end
   end
 
   class LetStatement < Expression
@@ -73,6 +77,15 @@ module Ast
 
     def to_s
       "#{token_literal} #{@name} = #{@value.or_else("")}"
+    end
+
+    def to_rb
+      case @value
+      when FunctionLiteral
+        "def #{@name}#{@value.to_rb}"
+      else
+        "#{@name} = #{@value.to_rb.or_else("")}"
+      end
     end
   end
 
@@ -128,6 +141,10 @@ module Ast
     def to_s
       "#{token_literal} #{@return_value.or_else("")}"
     end
+
+    def to_rb
+      "return #{@return_value.to_rb.or_else("")}"
+    end
   end
 
   class PrefixExpression < Expression
@@ -182,6 +199,10 @@ module Ast
     def to_s
       "#{@function}(#{@arguments.or_else([]).join(", ")})"
     end
+
+    def to_rb
+      "#{@function.to_rb}(#{@arguments.or_else([]).map(&:to_rb).join(", ")})"
+    end
   end
 
   class ArrayLiteral < Expression
@@ -232,13 +253,12 @@ module Ast
       if @alternative.nil?
         "#{@consequence.to_rb} if #{@condition.to_rb}"
       else
-        %(
-          if #{@condition.to_rb}
+        "if #{@condition.to_rb}
             #{@consequence.to_rb}
           else
             #{@alternative.to_rb}
           end
-        )
+        "
       end
     end
   end
@@ -273,6 +293,12 @@ module Ast
 
     def to_s
       "#{token_literal}(#{@parameters.or_else([]).join(", ")}) {#{@body}}"
+    end
+
+    def to_rb
+      "(#{@parameters.or_else([]).map(&:to_rb).join(", ")})
+        #{@body.to_rb}
+      end"
     end
   end
 
