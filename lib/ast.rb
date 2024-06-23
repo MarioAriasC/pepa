@@ -227,6 +227,20 @@ module Ast
     def to_s
       "if(#{@condition}) #{@consequence} #{@alternative ? "else #{@alternative}" : ""}"
     end
+
+    def to_rb
+      if @alternative.nil?
+        "#{@consequence.to_rb} if #{@condition.to_rb}"
+      else
+        %(
+          if #{@condition.to_rb}
+            #{@consequence.to_rb}
+          else
+            #{@alternative.to_rb}
+          end
+        )
+      end
+    end
   end
 
   class BlockStatement < Expression
@@ -240,6 +254,10 @@ module Ast
 
     def to_s
       @statements.or_else([]).join
+    end
+
+    def to_rb
+      @statements.map(&:to_rb).join("\n")
     end
   end
 
