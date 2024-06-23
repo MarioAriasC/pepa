@@ -59,6 +59,19 @@ describe "Transpiler" do
       transpile_and_assert(input, expected)
     end
   end
+
+  it "transpile and execute bang operator" do
+    [
+      ["!true", false],
+      ["!false", true],
+      ["!5", false],
+      ["!!true", true],
+      ["!!false", false],
+      ["!!5", true]
+    ].each do |input, expected|
+      transpile_and_assert(input, expected)
+    end
+  end
 end
 
 def transpile_and_assert(input, expected)
