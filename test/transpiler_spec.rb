@@ -30,10 +30,7 @@ describe "Transpiler" do
       ["3 * (3 * 3) + 10", 37],
       ["(5 + 10 * 2 + 15 / 3) * 2 + -10", 50]
     ].each do |input, expected|
-      program = create_program(input)
-      transpiled = Transpiler.transpile(program)
-      result = Kernel.eval(transpiled)
-      assert_equal expected, result
+      transpile_and_assert(input, expected)
     end
   end
 
@@ -59,13 +56,14 @@ describe "Transpiler" do
       ["(1 > 2) == true", false],
       ["(1 > 2) == false", true]
     ].each do |input, expected|
-      program = create_program(input)
-      pp program
-      transpiled = Transpiler.transpile(program)
-      pp transpiled
-      result = Kernel.eval(transpiled)
-      pp result
-      assert_equal expected, result
+      transpile_and_assert(input, expected)
     end
   end
+end
+
+def transpile_and_assert(input, expected)
+  program = create_program(input)
+  transpiled = Transpiler.transpile(program)
+  result = Kernel.eval(transpiled)
+  assert_equal expected, result
 end

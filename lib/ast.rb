@@ -25,6 +25,10 @@ module Ast
     def to_s
       @token.literal
     end
+
+    def to_rb
+      @token.literal
+    end
   end
 
   class Program
@@ -98,10 +102,6 @@ module Ast
     def initialize(token, value)
       @token = token
       @value = value
-    end
-
-    def to_rb
-      to_s
     end
   end
 
