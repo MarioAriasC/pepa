@@ -164,6 +164,34 @@ describe "Transpiler" do
       transpile_and_assert(input, expected)
     end
   end
+
+  it "let statements" do
+    [
+      ["let a = 5; a;", 5],
+      ["let a = 5 * 5; a;", 25],
+      ["let a = 5; let b = a; b;", 5],
+      ["let a = 5; let b = a; let c = a + b + 5; c;", 15]
+    ].each do |input, expected|
+      transpile_and_assert(input, expected)
+    end
+  end
+
+  it "recursive fibonacci" do
+    input = "
+let fibonacci = fn(x) {
+	if (x == 0) {
+		return 0;
+	} else {
+		if (x == 1) {
+			return 1;
+		} else {
+			fibonacci(x - 1) + fibonacci(x - 2);
+		}
+	}
+};
+fibonacci(15);"
+    transpile_and_assert(input, 610)
+  end
 end
 
 def transpile_and_assert(input, expected)
@@ -172,7 +200,7 @@ def transpile_and_assert(input, expected)
   program = create_program(input)
   pp program
   transpiled = Transpiler.transpile(program)
-  p transpiled
+  puts transpiled
   result = nil
 
   begin
@@ -180,6 +208,7 @@ def transpile_and_assert(input, expected)
   rescue StandardError => e
     result = e.message
   end
+  puts "--> result"
   pp result
   if expected.nil?
     assert_nil result

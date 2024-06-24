@@ -308,7 +308,8 @@ module Ast
       else
         "(#{@parameters.or_else([]).map(&:to_rb).join(", ")})
           #{@body.to_rb}
-         end"
+         end
+"
       end
     end
   end

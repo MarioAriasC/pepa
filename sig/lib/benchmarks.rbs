@@ -1,0 +1,11 @@
+module Benchmarks
+  def self.measure: () { () -> untyped } -> void
+
+  def self.fast_input: (Integer size) -> ::String
+
+  def self.eval: () -> void
+
+  def self.ruby: () -> void
+
+  def self.parse: (String input) -> Ast::Program
+end
