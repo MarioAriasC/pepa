@@ -176,6 +176,34 @@ describe "Transpiler" do
     end
   end
 
+  it "function application" do
+    [
+      ["let identity = fn(x) { x; }; identity(5);", 5],
+      ["let identity = fn(x) { return x; }; identity(5);", 5],
+      ["let double = fn(x) { x * 2; }; double(5);", 10],
+      ["let add = fn(x, y) { x + y; }; add(5, 5);", 10],
+      ["let add = fn(x, y) { x + y; }; add(5 + 5, add(5, 5));", 20],
+      ["fn(x) { x; }(5)", 5]
+    ].each do |input, expected|
+      transpile_and_assert(input, expected)
+    end
+  end
+
+  it "enclosing environments" do
+    input = "let first = 10;
+          let second = 10;
+          let THIRD = 10;
+
+          let ourFunction = fn(first) {
+            let second = 20;
+
+            first + second + THIRD;
+          };
+
+          ourFunction(20) + first + second;"
+    transpile_and_assert(input, 70)
+  end
+
   it "recursive fibonacci" do
     input = "
 let fibonacci = fn(x) {

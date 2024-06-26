@@ -201,7 +201,18 @@ module Ast
     end
 
     def to_rb
-      "#{@function.to_rb}(#{@arguments.or_else([]).map(&:to_rb).join(", ")})"
+      parenthesis = "(#{@arguments.or_else([]).map(&:to_rb).join(", ")})"
+      case @function
+      when FunctionLiteral
+        # is the function a ruby lambda?
+        if @function.name == ""
+          "#{@function.to_rb}.call#{parenthesis}"
+        else
+          "#{@function.to_rb}#{parenthesis}"
+        end
+      else
+        "#{@function.to_rb}#{parenthesis}"
+      end
     end
   end
 
