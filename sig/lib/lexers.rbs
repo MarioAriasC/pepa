@@ -1,22 +1,47 @@
 module Lexers
-  WHITE_SPACES: untyped
+  WHITE_SPACES: ::Array[" " | "\t" | "\n" | "\r"]
 
-  ZERO: ::String
+  ZERO: ""
 
   class Lexer
+    @position: int
+
+    @read_position: int
+
+    @ch: String
+
+    @input: String
+
     def initialize: (String input) -> void
 
     def next_token: () -> Tokens::Token
 
     private
 
-    def ends_with_equal: (Tokens::TokenType one_char, Tokens::TokenType two_chars, ?duplicate_chars: bool duplicate_chars) -> Tokens::Token
+    def read_string: () -> String
+
+    def read_value: () { (String) -> bool } -> String
+
+    def read_identifier: () -> String
+
+    def read_number: () -> String
+
+    def ends_with_equal: (Tokens::TokenType one_char, Tokens::TokenType two_chars, ?duplicate_chars: bool) -> Tokens::Token
+
+    def token: (Tokens::TokenType token_type) -> Tokens::Token
 
     def skip_whitespace: () -> void
 
     def read_char: () -> void
 
     def peak_char: () -> String
-
   end
+end
+
+class String
+  def identifier?: () -> bool
+
+  def letter?: () -> bool
+
+  def number?: () -> int?
 end

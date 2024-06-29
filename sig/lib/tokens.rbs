@@ -1,10 +1,15 @@
 module Tokens
+  # TokenType
   class TokenType
+    @value: String
+
     attr_reader value: String
 
     def initialize: (String value) -> void
 
     def eql?: (TokenType other) -> bool
+
+    def to_s: () -> String
   end
 
   ILLEGAL: TokenType
@@ -69,14 +74,18 @@ module Tokens
 
   STRING: TokenType
 
-  KEYBOARDS: untyped
+  KEYBOARDS: ::Hash[::String, TokenType]
 
   class Token
+    @type: TokenType
+
+    @literal: String
+
     attr_reader literal: String
 
     attr_reader type: TokenType
 
-    def initialize: (TokenType `type`, String literal) -> void
+    def initialize: (TokenType type, String literal) -> void
   end
 end
 

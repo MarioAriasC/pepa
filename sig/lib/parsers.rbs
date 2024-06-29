@@ -1,21 +1,129 @@
 module Parsers
-  class Parser
-    attr_reader errors: untyped
+  module Precedence
+    LOWEST: 0
 
-    def initialize: (untyped lexer) -> void
+    EQUALS: 1
+
+    LESS_GREATER: 2
+
+    SUM: 3
+
+    PRODUCT: 4
+
+    PREFIX: 5
+
+    CALL: 6
+
+    INDEX: 7
+  end
+
+  PRECEDENCES: ::Hash[Tokens::TokenType, Integer]
+
+  class Parser
+    @lexer: Lexers::Lexer
+
+    @cur_token: Tokens::Token
+
+    @peek_token: Tokens::Token
+
+    @errors: Array[String]
+
+    @m_parse_integer_literal: Method
+
+    @m_parse_boolean_literal: Method
+
+    @m_parse_identifier: untyped
+
+    @m_parse_prefix_expression: untyped
+
+    @m_parse_group_expression: untyped
+
+    @m_parse_array_literal: untyped
+
+    @m_parse_if_expression: untyped
+
+    @m_parse_function_literal: untyped
+
+    @m_parse_string_literal: untyped
+
+    @m_parse_hash_literal: untyped
+
+    @m_parse_infix_expression: Method
+
+    @m_parse_call_expression: untyped
+
+    @m_parse_index_expression: untyped
+
+    attr_reader errors: Array[String]
+
+    def initialize: (Lexers::Lexer lexer) -> void
+
+    def prefix_parsers: (Tokens::TokenType token_type) -> Method
+
+    def infix_parsers: (Tokens::TokenType token_type) -> Method
 
     def parse_program: () -> Ast::Program
 
     private
 
-    def next_token: () -> Tokens::Token
+    def parse_string_literal: () -> Ast::Expression
 
-    def parse_let_statement: () -> (nil | Ast::LetStatement)
+    def next_token: () -> void
 
-    def parse_statement: () -> (nil | Ast::Expression)
+    def parse_let_statement: () -> Ast::Expression?
 
-    def expect_peek?: (Tokens::TokenType token_type) -> bool
+    def parse_statement: () -> Ast::Expression?
+
+    def parse_expression: (int precedence) -> Ast::Expression?
+
+    def parse_expression_statement: () -> Ast::Expression
+
+    def parse_return_statement: () -> Ast::Expression
+
+    def parse_integer_literal: () -> Ast::Expression?
+
+    def parse_boolean_literal: () -> Ast::Expression
+
+    def parse_identifier: () -> Ast::Expression
+
+    def parse_prefix_expression: () -> Ast::Expression
+
+    def parse_infix_expression: (Ast::Expression? left) -> Ast::Expression
+
+    def parse_group_expression: () -> Ast::Expression?
+
+    def parse_call_expression: (Ast::Expression? expression) -> Ast::Expression
+
+    def parse_expression_list: (Tokens::TokenType end_type) -> Array[Ast::Expression?]?
+
+    def parse_array_literal: () -> Ast::Expression
+
+    def parse_index_expression: (Ast::Expression? left) -> Ast::Expression?
+
+    def parse_if_expression: () -> Ast::Expression?
+
+    def parse_block_statement: () -> Ast::BlockStatement
+
+    def parse_function_literal: () -> Ast::Expression?
+
+    def parse_function_parameters: () -> Array[Ast::Identifier]?
+
+    def parse_hash_literal: () -> Ast::Expression?
+
+    def expect_peek?: (Tokens::TokenType token_type) -> (bool)
 
     def peek_token_is?: (Tokens::TokenType token_type) -> bool
+
+    def no_prefix_parse_error: (Tokens::TokenType token_type) -> void
+
+    def peek_error: (Tokens::TokenType token_type) -> void
+
+    def cur_token_is: (Tokens::TokenType token_type) -> bool
+
+    def peek_precedence: () -> Integer
+
+    def find_precedence: (Tokens::TokenType token_type) -> Integer
+
+    def cur_precedence: () -> Integer
   end
 end

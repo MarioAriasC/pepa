@@ -1,0 +1,12 @@
+#!/usr/bin/env -S ruby --yjit
+# frozen_string_literal: true
+
+require_relative "../lib/benchmarks"
+require_relative "../lib/transpiler"
+# Benchmarks._ruby
+
+input = Benchmarks.fast_input(35)
+program = Benchmarks.parse(input)
+code = Transpiler.transpile(program)
+result = Kernel.eval(code)
+puts result

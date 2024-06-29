@@ -1,7 +1,73 @@
 module Evaluator
-  class Environment
+  M_TRUE: Objects::MBoolean
 
+  M_FALSE: Objects::MBoolean
+
+  BUILTINS: ::Hash[String, Objects::MBuiltinFunction]
+
+  class Environment
+    @store: Hash[String,Objects::MObject]
+
+    @outer: Environment?
+
+    def initialize: (::Hash[String, Objects::MObject] store, Environment? outer) -> void
+
+    def []=: (String name, Objects::MObject value) -> void
+
+    def []: (String name) -> Objects::MObject
   end
 
-  def self.evaluate: (Ast::Program program, Environment environment) -> Objects::MObject
+  def self.evaluate: (Ast::Program program, Environment environment) -> Objects::MObject?
+
+  def self.inner_eval: (Ast::Expression? node, Environment environment) -> Objects::MObject?
+
+  def self.eval_minus_prefix_operator_expression: (Objects::MObject right) -> Objects::MObject?
+
+  def self.eval_index_expression: (Objects::MObject? left, Objects::MObject? index) -> Objects::MObject?
+
+  def self.eval_array_index_expression: (Objects::MArray array, Objects::MInteger index) -> Objects::MObject?
+
+  def self.eval_hash_index_expression: (Objects::MHash hash, Objects::MObject index) -> Objects::MObject
+
+  def self.eval_hash_literal: (Ast::HashLiteral hash_literal, Environment environment) -> Objects::MObject?
+
+  def self.eval_bang_operator_expression: (Objects::MObject right) -> Objects::MObject
+
+  def self.eval_expressions: (Array[Ast::Expression?]? arguments, Environment environment) -> Array[Objects::MObject?]
+
+  def self.apply_function: (Objects::MObject function, Array[Objects::MObject?] args) -> Objects::MObject?
+
+  def self.extend_function_env: (Objects::MFunction function, Array[Objects::MObject?] args) -> Environment
+
+  def self.unwrap_return_value: (Objects::MObject? obj) -> Objects::MObject?
+
+  def self.eval_identifier: (Ast::Identifier identifier, Environment environment) -> Objects::MObject
+
+  def self.eval_prefix_expression: (String operator, Objects::MObject right) -> Objects::MObject?
+
+  def self.eval_integer_infix_expression: (String operator, Objects::MInteger left, Objects::MInteger right) -> Objects::MObject
+
+  def self.eval_infix_expression: (String operator, Objects::MObject left, Objects::MObject right) -> Objects::MObject
+
+  def self.eval_string_infix_expression: (String operator, Objects::MString left, Objects::MString right) -> Objects::MObject
+
+  def self.eval_if_expression: (Ast::IfExpression if_expression, Environment environment) -> Objects::MObject?
+
+  def self.eval_block_statement: (Ast::BlockStatement block_statement, Environment environment) -> Objects::MObject?
+end
+
+class TrueClass
+  def to_m: () -> Objects::MBoolean
+end
+
+class FalseClass
+  def to_m: () -> Objects::MBoolean
+end
+
+class NilClass
+  def if_not_error: () { () -> Objects::MObject } -> self
+
+  def error?: () -> false
+
+  def type_desc: () -> "nil"
 end

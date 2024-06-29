@@ -1,11 +1,15 @@
 module Ast
   class Node
-    def token_literal: () -> String
+    def token_literal: () -> nil
   end
 
   class Expression < Node
-    def eql?: (untyped other) -> bool
+    def eql?: (Expression other) -> bool
+
+    def to_rb: () -> String
   end
+
+  Statement: Expression
 
   module TokenHolder
     attr_reader token: Tokens::Token
@@ -17,195 +21,285 @@ module Ast
     def to_s: () -> String
   end
 
-  class Program < Node
+  class Program
+    @statements: Array[Expression]
+
     attr_reader statements: Array[Expression]
 
     def initialize: (Array[Expression] statements) -> void
 
-    def token_literal: () -> String
-
     def to_s: () -> String
+
+    def to_rb: () -> String
   end
 
   class Identifier < Expression
+    @token: Tokens::Token
+
+    @value: String
+
     include TokenHolder
 
-    attr_reader value: untyped
+    attr_reader value: String
 
-    def initialize: (untyped token, untyped value) -> void
+    def initialize: (Tokens::Token token, String value) -> void
 
     def to_s: () -> String
   end
 
   class LetStatement < Expression
+    @token: Tokens::Token
+
+    @name: Identifier
+
+    @value: Expression?
+
     include TokenHolder
 
-    attr_reader name: untyped
+    attr_reader name: Identifier
 
-    attr_reader value: untyped
+    attr_reader value: Expression?
 
-    def initialize: (untyped token, untyped name, untyped value) -> void
+    def initialize: (Tokens::Token token, Identifier name, Expression? value) -> void
 
     def to_s: () -> ::String
   end
 
   class ExpressionStatement < Expression
+    @token: Tokens::Token
+
+    @expression: Expression?
+
     include TokenHolder
 
-    attr_reader expression: untyped
+    attr_reader expression: Expression?
 
-    def initialize: (untyped token, untyped expression) -> void
+    def initialize: (Tokens::Token token, Expression? expression) -> void
 
     def to_s: () -> String
   end
 
   class IntegerLiteral < Expression
+    @token: Tokens::Token
+
+    @value: int
+
     include TokenHolder
 
     include LiteralExpression
 
-    attr_reader value: untyped
+    attr_reader value: int
 
-    def initialize: (untyped token, untyped value) -> void
+    def initialize: (Tokens::Token token, int value) -> void
   end
 
   class BooleanLiteral < Expression
+    @token: Tokens::Token
+
+    @value: bool
+
     include TokenHolder
 
     include LiteralExpression
 
-    attr_reader value: untyped
+    attr_reader value: bool
 
-    def initialize: (untyped token, untyped value) -> void
+    def initialize: (Tokens::Token token, bool value) -> void
   end
 
   class ReturnStatement < Expression
+    @token: Tokens::Token
+
+    @return_value: Expression?
+
     include TokenHolder
 
-    attr_reader return_value: untyped
+    attr_reader return_value: Expression?
 
-    def initialize: (untyped token, untyped return_value) -> void
+    def initialize: (Tokens::Token token, Expression? return_value) -> void
 
     def to_s: () -> ::String
   end
 
   class PrefixExpression < Expression
+    @token: Tokens::Token
+
+    @operator: String
+
+    @right: Expression?
+
     include TokenHolder
 
     attr_reader operator: String
 
-    attr_reader right: Expression
+    attr_reader right: Expression?
 
-    def initialize: (Tokens::Token token, String operator, Expression right) -> void
+    def initialize: (Tokens::Token token, String operator, Expression? right) -> void
 
     def to_s: () -> ::String
   end
 
   class InfixExpression < Expression
+    @token: Tokens::Token
+
+    @left: Expression?
+
+    @operator: String
+
+    @right: Expression?
+
     include TokenHolder
 
-    attr_reader left: Expression
+    attr_reader left: Expression?
 
     attr_reader operator: String
 
-    attr_reader right: Expression
+    attr_reader right: Expression?
 
-    def initialize: (Tokens::Token token, Expression left, String operator, Expression right) -> void
+    def initialize: (Tokens::Token token, Expression? left, String operator, Expression? right) -> void
 
     def to_s: () -> ::String
   end
 
   class CallExpression < Expression
+    @token: Tokens::Token
+
+    @function: Expression?
+
+    @arguments: Array[Expression?]?
+
     include TokenHolder
 
-    attr_reader function: untyped
+    attr_reader function: Expression?
 
-    attr_reader arguments: untyped
+    attr_reader arguments: Array[Expression?]?
 
-    def initialize: (untyped token, untyped function, untyped arguments) -> void
+    def initialize: (Tokens::Token token, Expression? function, Array[Expression?]? arguments) -> void
 
     def to_s: () -> ::String
   end
 
   class ArrayLiteral < Expression
+    @token: Tokens::Token
+
+    @elements: Array[Expression?]?
+
     include TokenHolder
 
-    attr_reader elements: untyped
+    attr_reader elements: Array[Expression?]?
 
-    def initialize: (untyped token, untyped elements) -> void
+    def initialize: (Tokens::Token token, Array[Expression?]? elements) -> void
 
     def to_s: () -> ::String
   end
 
   class IndexExpression < Expression
+    @token: Tokens::Token
+
+    @left: Expression?
+
+    @index: Expression?
+
     include TokenHolder
 
-    attr_reader left: untyped
+    attr_reader left: Expression?
 
-    attr_reader index: untyped
+    attr_reader index: Expression?
 
-    def initialize: (untyped token, untyped left, untyped index) -> void
+    def initialize: (Tokens::Token token, Expression? left, Expression? index) -> void
 
     def to_s: () -> ::String
   end
 
   class IfExpression < Expression
+    @token: Tokens::Token
+
+    @condition: Expression?
+
+    @consequence: BlockStatement?
+
+    @alternative: BlockStatement?
+
     include TokenHolder
 
-    attr_reader condition: untyped
+    attr_reader condition: Expression?
 
-    attr_reader consequence: untyped
+    attr_reader consequence: BlockStatement?
 
-    attr_reader alternative: untyped
+    attr_reader alternative: BlockStatement?
 
-    def initialize: (untyped token, untyped condition, untyped consequence, untyped alternative) -> void
+    def initialize: (Tokens::Token token, Expression? condition, BlockStatement? consequence, BlockStatement? alternative) -> void
 
     def to_s: () -> ::String
   end
 
   class BlockStatement < Expression
+    @token: Tokens::Token
+
+    @statements: Array[Expression?]?
+
     include TokenHolder
 
-    attr_reader statements: untyped
+    attr_reader statements: Array[Expression?]?
 
-    def initialize: (untyped token, untyped statements) -> void
+    def initialize: (Tokens::Token token, Array[Expression?]? statements) -> void
 
-    def to_s: () -> String
+    def to_s: () -> untyped
   end
 
   class FunctionLiteral < Expression
+    @token: Tokens::Token
+
+    @parameters: Array[Identifier]?
+
+    @body: BlockStatement?
+
+    @name: String
+
     include TokenHolder
 
-    attr_reader parameters: untyped
+    attr_reader parameters: Array[Identifier]?
 
-    attr_reader body: untyped
+    attr_reader body: BlockStatement?
 
-    def initialize: (untyped token, untyped parameters, untyped body) -> void
+    attr_reader name: String
+
+    attr_writer name: String
+
+    def initialize: (Tokens::Token token, Array[Identifier]? parameters, BlockStatement? body, String name) -> void
 
     def to_s: () -> ::String
   end
 
   class StringLiteral < Expression
+    @token: Tokens::Token
+
+    @value: String
+
     include TokenHolder
 
-    attr_reader value: untyped
+    attr_reader value: String
 
-    def initialize: (untyped token, untyped value) -> void
+    def initialize: (Tokens::Token token, String value) -> void
 
     def to_s: () -> String
   end
 
   class HashLiteral < Expression
+    @token: Tokens::Token
+
+    @pairs: Hash[Expression, Expression]
+
     include TokenHolder
 
-    attr_reader pairs: untyped
+    attr_reader pairs: Hash[Expression, Expression]
 
-    def initialize: (untyped token, untyped pairs) -> void
+    def initialize: (Tokens::Token token, Hash[Expression, Expression] pairs) -> void
 
     def to_s: () -> ::String
   end
 end
 
 class Object
-  def or_else: (untyped alternative) -> untyped
+  def or_else: [T](T alternative) -> (T | self)
 end

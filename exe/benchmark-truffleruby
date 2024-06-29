@@ -1,4 +1,4 @@
-#!/usr/bin/env truffleruby
+#!/usr/bin/env /home/mario/.local/share/mise/installs/ruby/truffleruby-24.0.1/bin/truffleruby
 # frozen_string_literal: true
 
 require_relative "../lib/benchmarks"

@@ -9,9 +9,10 @@ module Ast
     def eql?(other)
       to_s == other.to_s
     end
+
+    def to_rb; end
   end
 
-  Statement = Expression
   module TokenHolder
     attr_reader :token
 
@@ -22,6 +23,10 @@ module Ast
 
   module LiteralExpression
     def to_s
+      @token.literal
+    end
+
+    def to_rb
       @token.literal
     end
   end
@@ -35,6 +40,10 @@ module Ast
 
     def to_s
       @statements.join
+    end
+
+    def to_rb
+      @statements.map(&:to_rb).join("\n")
     end
   end
 
@@ -50,9 +59,13 @@ module Ast
     def to_s
       @value
     end
+
+    def to_rb
+      @value
+    end
   end
 
-  class LetStatement < Statement
+  class LetStatement < Expression
     include TokenHolder
     attr_reader :name, :value
 
@@ -65,9 +78,18 @@ module Ast
     def to_s
       "#{token_literal} #{@name} = #{@value.or_else("")}"
     end
+
+    def to_rb
+      case @value
+      when FunctionLiteral
+        "def #{@name}#{@value.to_rb}"
+      else
+        "#{@name} = #{@value.to_rb.or_else("")}"
+      end
+    end
   end
 
-  class ExpressionStatement < Statement
+  class ExpressionStatement < Expression
     include TokenHolder
     attr_reader :expression
 
@@ -78,6 +100,10 @@ module Ast
 
     def to_s
       @expression.or_else("").to_s
+    end
+
+    def to_rb
+      @expression.to_rb
     end
   end
 
@@ -103,7 +129,7 @@ module Ast
     end
   end
 
-  class ReturnStatement < Statement
+  class ReturnStatement < Expression
     include TokenHolder
     attr_reader :return_value
 
@@ -114,6 +140,10 @@ module Ast
 
     def to_s
       "#{token_literal} #{@return_value.or_else("")}"
+    end
+
+    def to_rb
+      "return #{@return_value.to_rb.or_else("")}"
     end
   end
 
@@ -129,6 +159,10 @@ module Ast
 
     def to_s
       "(#{@operator}#{@right})"
+    end
+
+    def to_rb
+      "(#{@operator}#{@right.to_rb})"
     end
   end
 
@@ -146,6 +180,10 @@ module Ast
     def to_s
       "(#{@left} #{operator} #{@right})"
     end
+
+    def to_rb
+      "(#{@left.to_rb} #{operator} #{@right.to_rb})"
+    end
   end
 
   class CallExpression < Expression
@@ -161,6 +199,21 @@ module Ast
     def to_s
       "#{@function}(#{@arguments.or_else([]).join(", ")})"
     end
+
+    def to_rb
+      parenthesis = "(#{@arguments.or_else([]).map(&:to_rb).join(", ")})"
+      case @function
+      when FunctionLiteral
+        # is the function a ruby lambda?
+        if @function.name == ""
+          "#{@function.to_rb}.call#{parenthesis}"
+        else
+          "#{@function.to_rb}#{parenthesis}"
+        end
+      else
+        "#{@function.to_rb}#{parenthesis}"
+      end
+    end
   end
 
   class ArrayLiteral < Expression
@@ -174,6 +227,10 @@ module Ast
 
     def to_s
       "[#{@elements.or_else([]).join(", ")}]"
+    end
+
+    def to_rb
+      "[#{@elements.or_else([]).map(&:to_rb).join(", ")}]"
     end
   end
 
@@ -189,6 +246,10 @@ module Ast
 
     def to_s
       "(#{@left}[#{@index}])"
+    end
+
+    def to_rb
+      "#{@left.to_rb}[#{@index.to_rb}]"
     end
   end
 
@@ -206,9 +267,22 @@ module Ast
     def to_s
       "if(#{@condition}) #{@consequence} #{@alternative ? "else #{@alternative}" : ""}"
     end
+
+    def to_rb
+      if @alternative.nil?
+        "#{@consequence.to_rb} if #{@condition.to_rb}"
+      else
+        "if #{@condition.to_rb}
+            #{@consequence.to_rb}
+          else
+            #{@alternative.to_rb}
+          end
+        "
+      end
+    end
   end
 
-  class BlockStatement < Statement
+  class BlockStatement < Expression
     include TokenHolder
     attr_reader :statements
 
@@ -220,20 +294,38 @@ module Ast
     def to_s
       @statements.or_else([]).join
     end
+
+    def to_rb
+      @statements.map(&:to_rb).join("\n")
+    end
   end
 
   class FunctionLiteral < Expression
     include TokenHolder
+    attr_accessor :name
     attr_reader :parameters, :body
 
-    def initialize(token, parameters, body)
+    def initialize(token, parameters, body, name = "")
       @token = token
       @parameters = parameters
       @body = body
+      @name = name
     end
 
     def to_s
       "#{token_literal}(#{@parameters.or_else([]).join(", ")}) {#{@body}}"
+    end
+
+    def to_rb
+      if @name == ""
+        # is anonymous
+        "->(#{@parameters.or_else([]).map(&:to_rb).join(", ")}) { #{@body.to_rb} }"
+      else
+        "(#{@parameters.or_else([]).map(&:to_rb).join(", ")})
+          #{@body.to_rb}
+         end
+"
+      end
     end
   end
 
@@ -249,6 +341,10 @@ module Ast
     def to_s
       @value
     end
+
+    def to_rb
+      %("#{@value}")
+    end
   end
 
   class HashLiteral < Expression
@@ -262,6 +358,10 @@ module Ast
 
     def to_s
       "{#{@pairs.map { |key, value| "#{key}:#{value}" }.join(", ")}}"
+    end
+
+    def to_rb
+      "({#{@pairs.map { |key, value| "#{key.to_rb} => #{value.to_rb}" }.join(", ")}}.freeze)"
     end
   end
 end
