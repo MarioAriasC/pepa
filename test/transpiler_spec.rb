@@ -236,6 +236,93 @@ describe "Transpiler" do
     end
   end
 
+  it "array literal" do
+    transpile_and_assert("[1, 2 * 2, 3 + 3]", [1, 4, 6])
+  end
+
+  it "array index expression" do
+    [
+      [
+        "[1, 2, 3][0]",
+        1
+      ],
+      [
+        "[1, 2, 3][1]",
+        2
+      ],
+      [
+        "[1, 2, 3][2]",
+        3
+      ],
+      [
+        "let i = 0; [1][i];",
+        1
+      ],
+      [
+        "[1, 2, 3][1 + 1];",
+        3
+      ],
+      [
+        "let myArray = [1, 2, 3]; myArray[2];",
+        3
+      ],
+      [
+        "let myArray = [1, 2, 3]; myArray[0] + myArray[1] + myArray[2];",
+        6
+      ],
+      [
+        "let myArray = [1, 2, 3]; let i = myArray[0]; myArray[i]",
+        2
+      ],
+      [
+        "[1, 2, 3][3]",
+        nil
+      ]
+      # This is not true in ruby, as ruby allow negative indexes
+      # [
+      #   "[1, 2, 3][-1]",
+      #   nil
+      # ]
+    ].each do |input, expected|
+      transpile_and_assert(input, expected)
+    end
+  end
+
+  it "hash literals" do
+    input = %(
+      let two = "two";
+      	{
+      		"one": 10 - 9,
+      		two: 1 + 1,
+      		"thr" + "ee": 6 / 2,
+      		4: 4,
+      		true: 5,
+      		false: 6
+      	})
+    transpile_and_assert(input, {
+      "one" => 1,
+      "two" => 2,
+      "three" => 3,
+      4 => 4,
+      true => 5,
+      false => 6
+    }.freeze)
+  end
+
+  it "hash index expressions" do
+    [
+      [%({"foo": 5, "bar": 7}["foo"]), 5],
+      [%({"foo": 5}["bar"]), nil],
+      [%(let key = "foo";{"foo": 5}[key]), 5],
+      [%({}["foo"]), nil],
+      ["{5:5}[5]", 5],
+      ["{true:5}[true]", 5],
+      ["{false:5}[false]", 5]
+    ].each do |input, expected|
+      transpile_and_assert(input, expected)
+    end
+  end
+
   it "recursive fibonacci" do
     input = "
 let fibonacci = fn(x) {
@@ -255,12 +342,12 @@ fibonacci(15);"
 end
 
 def transpile_and_assert(input, expected)
-  puts "--> start"
-  pp input
+  # puts "--> start"
+  # pp input
   program = create_program(input)
-  pp program
+  # pp program
   transpiled = Transpiler.transpile(program)
-  puts transpiled
+  # puts transpiled
   result = nil
 
   begin
@@ -268,8 +355,8 @@ def transpile_and_assert(input, expected)
   rescue StandardError => e
     result = e.message
   end
-  puts "--> result"
-  pp result
+  # puts "--> result"
+  # pp result
   if expected.nil?
     assert_nil result
   else
