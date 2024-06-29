@@ -18,9 +18,11 @@ compiler implementation
 
 Before running the command you must have Ruby 3.1.0 or up installed on your machine
 
-| Script                                       | Description                                                |
-|----------------------------------------------|------------------------------------------------------------|
-| `rake`                                       | Run tests and rubocop                                      |
-| [`./exe/benchmark`](exe/benchmark)           | Run the classic monkey benchmark (`fibonacci(35)`)         |
-| [`./exe/benchmark-yjit`](exe/benchmark-yjit) | Run the classic monkey benchmark with JIT(`fibonacci(35)`) |
-| [`./exe/pepa`](exe/pepa)                     | Run the Pepa REPL                                          |
+| Script                                             | Description                                                                   |
+|----------------------------------------------------|-------------------------------------------------------------------------------|
+| `rake`                                             | Run tests and rubocop                                                         |
+| [`./exe/benchmark`](exe/benchmark)                 | Run the classic monkey benchmark (`fibonacci(35)`)                            |
+| [`./exe/benchmark-yjit`](exe/benchmark-yjit)       | Run the classic monkey benchmark with JIT(`fibonacci(35)`)                    |
+| [`./exe/benchmark-tr`](exe/benchmark-tr)           | Run the classic monkey benchmark transpiled to Ruby(`fibonacci(35)`)          |
+| [`./exe/benchmark-tr-yjit`](exe/benchmark-tr-yjit) | Run the classic monkey benchmark transpiled to Ruby with JIT(`fibonacci(35)`) |
+| [`./exe/pepa`](exe/pepa)                           | Run the Pepa REPL                                                             |
