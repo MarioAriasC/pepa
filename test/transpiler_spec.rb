@@ -204,6 +204,38 @@ describe "Transpiler" do
     transpile_and_assert(input, 70)
   end
 
+  it "string literal" do
+    transpile_and_assert(%("Hello World!"), "Hello World!")
+  end
+
+  it "string concatenation" do
+    transpile_and_assert(%("Hello" + " " + "World!"), "Hello World!")
+  end
+
+  it "builtin functions" do
+    [
+      [%(len("")), 0],
+      [%(len("four")), 4],
+      [%(len("hello world")), 11],
+      ["len(1)", "argument to `len` not supported, got Integer"],
+      [%(len("one", "two")), "wrong number of arguments (given 2, expected 1)"],
+      ["len([1, 2, 3])", 3],
+      ["len([])", 0],
+      ["push([], 1)", [1]],
+      ["push(1, 1)", "argument to `push` must be ARRAY, got Integer"],
+      ["first([1, 2, 3])", 1],
+      ["first([])", nil],
+      ["first(1)", "argument to `first` must be ARRAY, got Integer"],
+      ["last([1, 2, 3])", 3],
+      ["last([])", nil],
+      ["last(1)", "argument to `last` must be ARRAY, got Integer"],
+      ["rest([1, 2, 3])", [2, 3]],
+      ["rest([])", nil]
+    ].each do |input, expected|
+      transpile_and_assert(input, expected)
+    end
+  end
+
   it "recursive fibonacci" do
     input = "
 let fibonacci = fn(x) {

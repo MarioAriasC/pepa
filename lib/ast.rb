@@ -228,6 +228,10 @@ module Ast
     def to_s
       "[#{@elements.or_else([]).join(", ")}]"
     end
+
+    def to_rb
+      "[#{@elements.or_else([]).map(&:to_rb).join(", ")}]"
+    end
   end
 
   class IndexExpression < Expression
