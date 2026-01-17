@@ -195,7 +195,7 @@ module Parsers
     end
 
     def parse_boolean_literal
-      Ast::BooleanLiteral.new(@cur_token, cur_token_is(Tokens::TRUE))
+      Ast::BooleanLiteral.new(@cur_token, cur_token_is?(Tokens::TRUE))
     end
 
     def parse_identifier
@@ -296,7 +296,7 @@ module Parsers
       statements = []
       next_token
 
-      while !cur_token_is(Tokens::RBRACE) && !cur_token_is(Tokens::EOF)
+      while !cur_token_is?(Tokens::RBRACE) && !cur_token_is?(Tokens::EOF)
         statement = parse_statement
         statements << statement unless statement.nil?
 
@@ -383,7 +383,7 @@ module Parsers
       @errors << "Expected next token to be #{token_type}, got #{@peek_token.type} instead"
     end
 
-    def cur_token_is(token_type)
+    def cur_token_is?(token_type)
       @cur_token.type == token_type
     end
 

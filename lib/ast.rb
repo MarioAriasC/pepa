@@ -49,6 +49,7 @@ module Ast
 
   class Identifier < Expression
     include TokenHolder
+
     attr_reader :value
 
     def initialize(token, value)
@@ -67,6 +68,7 @@ module Ast
 
   class LetStatement < Expression
     include TokenHolder
+
     attr_reader :name, :value
 
     def initialize(token, name, value)
@@ -91,6 +93,7 @@ module Ast
 
   class ExpressionStatement < Expression
     include TokenHolder
+
     attr_reader :expression
 
     def initialize(token, expression)
@@ -110,6 +113,7 @@ module Ast
   class IntegerLiteral < Expression
     include TokenHolder
     include LiteralExpression
+
     attr_reader :value
 
     def initialize(token, value)
@@ -121,6 +125,7 @@ module Ast
   class BooleanLiteral < Expression
     include TokenHolder
     include LiteralExpression
+
     attr_reader :value
 
     def initialize(token, value)
@@ -131,6 +136,7 @@ module Ast
 
   class ReturnStatement < Expression
     include TokenHolder
+
     attr_reader :return_value
 
     def initialize(token, return_value)
@@ -149,6 +155,7 @@ module Ast
 
   class PrefixExpression < Expression
     include TokenHolder
+
     attr_reader :operator, :right
 
     def initialize(token, operator, right)
@@ -168,6 +175,7 @@ module Ast
 
   class InfixExpression < Expression
     include TokenHolder
+
     attr_reader :left, :operator, :right
 
     def initialize(token, left, operator, right)
@@ -188,6 +196,7 @@ module Ast
 
   class CallExpression < Expression
     include TokenHolder
+
     attr_reader :function, :arguments
 
     def initialize(token, function, arguments)
@@ -218,6 +227,7 @@ module Ast
 
   class ArrayLiteral < Expression
     include TokenHolder
+
     attr_reader :elements
 
     def initialize(token, elements)
@@ -236,6 +246,7 @@ module Ast
 
   class IndexExpression < Expression
     include TokenHolder
+
     attr_reader :left, :index
 
     def initialize(token, left, index)
@@ -255,6 +266,7 @@ module Ast
 
   class IfExpression < Expression
     include TokenHolder
+
     attr_reader :condition, :consequence, :alternative
 
     def initialize(token, condition, consequence, alternative)
@@ -265,7 +277,7 @@ module Ast
     end
 
     def to_s
-      "if(#{@condition}) #{@consequence} #{@alternative ? "else #{@alternative}" : ""}"
+      "if(#{@condition}) #{@consequence} #{"else #{@alternative}" if @alternative}"
     end
 
     def to_rb
@@ -284,6 +296,7 @@ module Ast
 
   class BlockStatement < Expression
     include TokenHolder
+
     attr_reader :statements
 
     def initialize(token, statements)
@@ -296,12 +309,13 @@ module Ast
     end
 
     def to_rb
-      @statements.map(&:to_rb).join("\n")
+      @statements.or_else([]).map(&:to_rb).join("\n")
     end
   end
 
   class FunctionLiteral < Expression
     include TokenHolder
+
     attr_accessor :name
     attr_reader :parameters, :body
 
@@ -331,6 +345,7 @@ module Ast
 
   class StringLiteral < Expression
     include TokenHolder
+
     attr_reader :value
 
     def initialize(token, value)
@@ -349,6 +364,7 @@ module Ast
 
   class HashLiteral < Expression
     include TokenHolder
+
     attr_reader :pairs
 
     def initialize(token, pairs)

@@ -17,7 +17,6 @@ module Lexers
 
     def next_token
       skip_whitespace
-      r = nil
       case @ch
       when "="
         r = ends_with_equal(Tokens::ASSIGN, Tokens::EQ)

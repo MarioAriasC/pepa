@@ -32,35 +32,35 @@ module Parsers
 
     @m_parse_boolean_literal: Method
 
-    @m_parse_identifier: untyped
+    @m_parse_identifier: Method
 
-    @m_parse_prefix_expression: untyped
+    @m_parse_prefix_expression: Method
 
-    @m_parse_group_expression: untyped
+    @m_parse_group_expression: Method
 
-    @m_parse_array_literal: untyped
+    @m_parse_array_literal: Method
 
-    @m_parse_if_expression: untyped
+    @m_parse_if_expression: Method
 
-    @m_parse_function_literal: untyped
+    @m_parse_function_literal: Method
 
-    @m_parse_string_literal: untyped
+    @m_parse_string_literal: Method
 
-    @m_parse_hash_literal: untyped
+    @m_parse_hash_literal: Method
 
     @m_parse_infix_expression: Method
 
-    @m_parse_call_expression: untyped
+    @m_parse_call_expression: Method
 
-    @m_parse_index_expression: untyped
+    @m_parse_index_expression: Method
 
     attr_reader errors: Array[String]
 
     def initialize: (Lexers::Lexer lexer) -> void
 
-    def prefix_parsers: (Tokens::TokenType token_type) -> Method
+    def prefix_parsers: (Tokens::TokenType token_type) -> Method?
 
-    def infix_parsers: (Tokens::TokenType token_type) -> Method
+    def infix_parsers: (Tokens::TokenType token_type) -> Method?
 
     def parse_program: () -> Ast::Program
 
@@ -118,7 +118,7 @@ module Parsers
 
     def peek_error: (Tokens::TokenType token_type) -> void
 
-    def cur_token_is: (Tokens::TokenType token_type) -> bool
+    def cur_token_is?: (Tokens::TokenType token_type) -> bool
 
     def peek_precedence: () -> Integer
 

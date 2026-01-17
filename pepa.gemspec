@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.summary = "An implementation of the Monkey language in Ruby"
   # spec.description = "TODO: Write a longer description or delete this line."
   spec.homepage = "https://github.com/MarioAriasC/pepa"
-  spec.required_ruby_version = ">= 3.1.0"
+  spec.required_ruby_version = ">= 4.0.0"
 
   spec.metadata["allowed_push_host"] = "TODO: Set to your gem server 'https://example.com'"
 

@@ -120,19 +120,19 @@ describe "Transpiler" do
     [
       ["5 + true;", "true can't be coerced into Integer"],
       ["5 + true; 5;", "true can't be coerced into Integer"],
-      ["-true", "undefined method `-@' for true"],
-      ["true + false;", "undefined method `+' for true"],
+      ["-true", "undefined method '-@' for true"],
+      ["true + false;", "undefined method '+' for true"],
       [
         "true + false + true + false;",
-        "undefined method `+' for true"
+        "undefined method '+' for true"
       ],
       [
         "5; true + false; 5",
-        "undefined method `+' for true"
+        "undefined method '+' for true"
       ],
       [
         "if (10 > 1) { true + false; }",
-        "undefined method `+' for true"
+        "undefined method '+' for true"
       ],
       [
         "
@@ -144,15 +144,15 @@ describe "Transpiler" do
               return 1;
             }
             ",
-        "undefined method `+' for true"
+        "undefined method '+' for true"
       ],
       [
         "foobar",
-        "undefined local variable or method `foobar' for module Kernel"
+        "undefined local variable or method 'foobar' for module Kernel"
       ],
       [
         %("Hello" - "World"),
-        "undefined method `-' for an instance of String"
+        "undefined method '-' for an instance of String"
       ]
       # this is valid in Ruby, ie, having a proc as index key
       # ({"name" => "Monkey"}.freeze)[->(x) { x }]
