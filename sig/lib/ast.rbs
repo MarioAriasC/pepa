@@ -19,6 +19,8 @@ module Ast
 
   module LiteralExpression
     def to_s: () -> String
+
+    def to_rb: () -> String
   end
 
   class Program

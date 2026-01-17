@@ -7,6 +7,7 @@ require_relative "../lib/transpiler"
 
 input = Benchmarks.fast_input(35)
 program = Benchmarks.parse(input)
+# pp program
 code = Transpiler.transpile(program)
 result = Kernel.eval(code)
 puts result

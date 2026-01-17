@@ -1,7 +1,7 @@
-require: rubocop-performance
+plugins: rubocop-performance
 
 AllCops:
-  TargetRubyVersion: 3.1
+  TargetRubyVersion: 4.0
   NewCops: enable
 
 Style/StringLiterals:
@@ -55,4 +55,9 @@ Naming/MethodParameterName:
   Enabled: false
 
 Gemspec/RequireMFA:
+  Enabled: false
+
+# Needed for transpilers
+
+Security/Eval:
   Enabled: false

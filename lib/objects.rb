@@ -71,7 +71,7 @@ module Objects
     end
 
     def /(other)
-      MInteger.new((@value / other.value))
+      MInteger.new(@value / other.value)
     end
 
     def <(other)
