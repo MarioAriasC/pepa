@@ -10,7 +10,7 @@ module Evaluator
 
     @outer: Environment?
 
-    def initialize: (::Hash[String, Objects::MObject] store, Environment? outer) -> void
+    def initialize: (?::Hash[String, Objects::MObject] store, ?Environment? outer) -> void
 
     def []=: (String name, Objects::MObject value) -> void
 

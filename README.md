@@ -20,6 +20,7 @@ Before running the command you must have Ruby 4.0.0 or up installed on your mach
 
 | Script                                             | Description                                                                   |
 |----------------------------------------------------|-------------------------------------------------------------------------------|
+| `bundle`                                           | Install denpendencies                                                         |
 | `rake`                                             | Run tests and rubocop                                                         |
 | [`./exe/benchmark`](exe/benchmark)                 | Run the classic monkey benchmark (`fibonacci(35)`)                            |
 | [`./exe/benchmark-yjit`](exe/benchmark-yjit)       | Run the classic monkey benchmark with JIT(`fibonacci(35)`)                    |

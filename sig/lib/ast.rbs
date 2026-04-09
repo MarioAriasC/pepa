@@ -268,7 +268,7 @@ module Ast
 
     attr_writer name: String
 
-    def initialize: (Tokens::Token token, Array[Identifier]? parameters, BlockStatement? body, String name) -> void
+    def initialize: (Tokens::Token token, Array[Identifier]? parameters, BlockStatement? body, ?String name) -> void
 
     def to_s: () -> ::String
   end

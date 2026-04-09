@@ -139,7 +139,7 @@ module Parsers
       next_token
       value = parse_expression(Precedence::LOWEST)
 
-      value.name = name if value.is_a? Ast::FunctionLiteral
+      value.name = name.value if value.is_a? Ast::FunctionLiteral
 
       next_token if peek_token_is?(Tokens::SEMICOLON)
       Ast::LetStatement.new(token, name, value)
